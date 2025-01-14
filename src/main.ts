@@ -1,4 +1,5 @@
 import './style.css'
+import { ui } from './animations';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <section class="section">
@@ -27,4 +28,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </div>
     </div>
 </section>
-`
+`ui()
