@@ -7,6 +7,22 @@ import barba from '@barba/core';
  * Animation for the preloader
  */
 
+function resetWebflow(data: any) {
+    let parser = new DOMParser();
+    let dom = parser.parseFromString(data.next.html, "text/html");
+    const webflowPageId = dom.querySelector("html")?.getAttribute("data-wf-page");
+    if (webflowPageId) {
+        document.documentElement.setAttribute("data-wf-page", webflowPageId);
+    }
+
+    // @ts-ignore
+    window.Webflow && window.Webflow.destroy();
+    // @ts-ignore
+    window.Webflow && window.Webflow.ready();
+    // @ts-ignore
+    window.Webflow && window.Webflow.require("ix2").init();
+}
+
 export function pageTransition() {
     const timeline = gsap.timeline({ paused: true })
 
@@ -81,7 +97,6 @@ export function pageTransition() {
 
     barba.init({
         sync: true,
-        debug: true,
         transitions: [{
             name: 'opacity-transition',
             async once() {
@@ -92,6 +107,11 @@ export function pageTransition() {
             },
             async after() {
                 return timeline.play();
+            },
+            async enter(data: any) {
+                resetWebflow(data);
+                
+                window.scrollTo(0, 0);
             }
         }]
     });
