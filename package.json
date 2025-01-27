@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@barba/core": "^2.10.3",
     "typescript": "~5.6.2",
     "vite": "^6.0.5"
   },
   "dependencies": {
-    "@barba/core": "^2.10.3",
     "@splidejs/splide": "^4.1.4",
     "@splidejs/splide-extension-auto-scroll": "^0.5.3",
     "gsap": "^3.12.5",

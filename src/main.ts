@@ -1,11 +1,12 @@
 import { createInfiniteMarquee, fadeInAnimation, } from "./animations/micro-animations";
-import { preloaderAnimation } from "./animations/preloader-animation";
+import { pageTransition } from "./animations/preloader-animation";
 import { modalAnimation } from "./animations/modal-animation";
 
 import Lenis from "lenis";
 import { smoothScroll } from "./animations/smooth-scroll-animation";
 
 import { gsap } from "gsap";
+import { CustomEase } from "gsap/CustomEase";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { scrollytelling } from "./animations/scrollytelling-animation";
@@ -18,7 +19,7 @@ import "./style.css";
  */
 ui();
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger,CustomEase);
 
 /**
  * Initialize a new Lenis instance for smooth scrolling.
@@ -34,7 +35,7 @@ const lenis = new Lenis({
 smoothScroll(lenis);
 
 // Start the preloader animation.
-preloaderAnimation();
+pageTransition();
 
 // Start the scrollytelling animation.
 scrollytelling();
