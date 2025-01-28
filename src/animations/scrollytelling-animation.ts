@@ -3,10 +3,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from 'split-type'
 
 export function scrollytelling() {
-    const heroAnimation = gsap.timeline({}),
-        uspsAnimation = gsap.timeline({}),
-        brandsAnimation = gsap.timeline({}),
-        closeAnimation = gsap.timeline({});
+    const heroAnimation = gsap.timeline({});
+    const uspsAnimation = gsap.timeline({});
+    const brandsAnimation = gsap.timeline({});
+    const closeAnimation = gsap.timeline({});
+    // const projectsAnimation = gsap.timeline({});
 
 
     if (window.innerWidth > 992) {
@@ -14,6 +15,7 @@ export function scrollytelling() {
         uspsTransition(uspsAnimation);
         brandsTransition(brandsAnimation);
         closeTransition(closeAnimation);
+        // projectTransition(projectsAnimation);
     }
 
     // window.addEventListener("resize", () => {
@@ -128,21 +130,33 @@ function uspsTransition(timeline: gsap.core.Timeline) {
             },
             { transform: `translate(0%, 0%) scale(1, 1)`, duration: 3 }
         )
-        .from(".usp_heading-fade", { opacity: 0 })
-        .from(".usp_header .usp_paragraph", { opacity: 0, y: "2rem" })
+        .from(
+            ".usp_heading-fade",
+            { opacity: 0 }
+        )
+        .from(
+            ".usp_header .usp_paragraph",
+            { opacity: 0, y: "2rem" }
+        )
         .addLabel("icon-01")
-        .from(".usp_bottom", { opacity: 0, y: "2rem" }, "-=0.4")
+        .from(
+            ".usp_bottom",
+            { opacity: 0, y: "2rem" }, "-=0.4"
+        )
         .addLabel("icon-02")
-        .to(".usp_bottom > div > div", { yPercent: -100 * (2 / 5) }, "+=0.3")
+        .to(
+            ".usp_bottom > div > div",
+            { yPercent: -100 * (2 / 5) }, "+=0.3"
+        )
         .addLabel("icon-03")
-        .to(".usp_bottom > div > div", { yPercent: -100 * (4 / 5) }, "+=0.3")
+        .to(
+            ".usp_bottom > div > div",
+            { yPercent: -100 * (4 / 5) }, "+=0.3"
+        )
         .addLabel("icon-04")
         .to(
             ".usp_bottom-icon",
-            {
-                y: -1 * ((icon?.top ?? 0) - (container?.top ?? 0) - 100 + 128),
-                duration: 1,
-            },
+            { y: -1 * ((icon?.top ?? 0) - (container?.top ?? 0) - 100 + 128), duration: 1, },
             "+=0.3"
         )
         .fromTo(
@@ -159,6 +173,12 @@ function uspsTransition(timeline: gsap.core.Timeline) {
         start: "top center",
         end: "bottom center",
         scrub: true,
+        snap: {
+            snapTo: "labels",
+            duration: { min: 0.1, max: 0.5 },
+            delay: 0.1,
+            ease: "power1.inOut",
+        },
     });
 }
 
@@ -179,6 +199,10 @@ function brandsTransition(timeline: gsap.core.Timeline) {
 
     const brandsList = document.querySelector<HTMLElement>(".brands_list");
 
+    const text = SplitType.create('.brands-transition-shape .features_heading')
+
+    console.log(text.lines)
+
     // add the animations to the timeline
     timeline
         .fromTo(
@@ -192,6 +216,17 @@ function brandsTransition(timeline: gsap.core.Timeline) {
             { transform: "translate(0%)" },
             "-=0.33"
         )
+        .set(
+            text.lines,
+            { width: 'fit-content', margin: '0px auto' },
+            '<'
+        )
+        .fromTo(
+            text.lines,
+            { background: "linear-gradient(90deg, transparent 0%, black 0%)" },
+            { background: "linear-gradient(90deg, transparent 100%, black 100%)" },
+            '-=0.3'
+        )
         .set(wrapper, { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" });
 
     // set the scroll trigger
@@ -204,6 +239,27 @@ function brandsTransition(timeline: gsap.core.Timeline) {
         pin: section,
         pinSpacing: false,
     });
+
+    const secondTimeline = gsap.timeline({
+        scrollTrigger: {
+            trigger: wrapper,
+            start: "top center",
+            end: "top top",
+            scrub: true,
+        }
+    })
+
+    secondTimeline
+        .fromTo(
+            '.brands_header',
+            { opacity: 0, y: '2rem' },
+            { opacity: 1, y: '0rem' },
+        )
+        .fromTo(
+            '.brands_buttons',
+            { opacity: 0, y: '2rem' },
+            { opacity: 1, y: '0rem' },
+        )
 }
 
 function closeTransition(timeline: gsap.core.Timeline) {
@@ -247,6 +303,60 @@ function closeTransition(timeline: gsap.core.Timeline) {
         end: "bottom top",
         scrub: true,
     });
+}
+
+function projectTransition(timeline: gsap.core.Timeline) {
+    // get the section
+    const section = document.querySelector<HTMLElement>(".expertise_section");
+    const projects = document.querySelector<HTMLElement>(".projects_section");
+
+    if (!section || !projects) return;
+
+    // create a wrapper for the section
+    const wrapper = document.createElement("div");
+    section.parentNode?.insertBefore(wrapper, section);
+    wrapper.appendChild(section);
+
+    // const projectsWrapper = document.createElement("div");
+    // projects.parentNode?.insertBefore(projectsWrapper, projects);
+    // projectsWrapper.appendChild(section);
+
+    // set the styles for the section and the wrapper
+    gsap.set(wrapper, { height: "200vh", position: "relative" });
+    gsap.set(section, { position: "sticky", top: 0 });
+
+    // gsap.set(projectsWrapper, { paddingTop: "100vh", position: "relative" });
+
+    // initiate the timeline
+    const path = {
+        element: document.getElementById("expertise-transition-path"),
+        start: "M100 100H0V0H49.5H100V100Z",
+        end: "M100 100H0V0H49.5H100V100Z",
+    };
+
+    // add the animations to the timeline
+    timeline
+        .set(
+            path.element,
+            { attr: { d: path.start } },
+        )
+        .fromTo(
+            path.element,
+            { scale: 0, rotation: 0, transformOrigin: "center center" },
+            { scale: 1.5, rotation: (360 * 2), transformOrigin: "center center", ease: "power4.inOut", }
+        )
+
+    // set the scroll trigger
+    ScrollTrigger.create({
+        animation: timeline,
+        trigger: wrapper,
+        start: "bottom 200%",
+        end: "bottom 100%",
+        scrub: true,
+        markers: true,
+        // pin: true,
+    });
+
 }
 
 // Helper functions
