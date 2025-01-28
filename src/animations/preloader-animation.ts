@@ -27,19 +27,14 @@ export function pageTransition() {
     const timeline = gsap.timeline({ paused: true })
 
     // const easing = CustomEase.create("easeName", "0.68, -0.6, 0.32, 1.6");
-    const easing = "elastic.out(0.8,0.3)";
+    const easing = "elastic.out(1.0,0.3)";
 
     timeline
         // Move the logo filter to its final position
-        .set(
-            '.preloader_logo-filter',
-            { height: "0%" },
-        )
         .fromTo(
             '#joyride-j',
             { yPercent: 100, },
             { yPercent: 0, duration: 3, ease: easing },
-            '+=0.5'
         )
         .fromTo(
             '#joyride-o',
