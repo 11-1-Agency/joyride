@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import SplitType from 'split-type'
 
 export function scrollytelling() {
     const heroAnimation = gsap.timeline({}),
