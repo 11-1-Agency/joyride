@@ -1,4 +1,5 @@
 import { gsap } from 'gsap';
+import { CustomEase } from "gsap/CustomEase";
 
 // @ts-ignore
 import barba from '@barba/core';
@@ -26,68 +27,46 @@ function resetWebflow(data: any) {
 export function pageTransition() {
     const timeline = gsap.timeline({ paused: true })
 
-    // const easing = CustomEase.create("easeName", "0.68, -0.6, 0.32, 1.6");
-    const easing = "elastic.out(1.0,0.3)";
+    const easing = CustomEase.create('superease', '.08,.73,0,1');
 
     timeline
-        // Move the logo filter to its final position
-        .fromTo(
-            '#joyride-j',
-            { yPercent: 100, },
-            { yPercent: 0, duration: 3, ease: easing },
-        )
-        .fromTo(
-            '#joyride-o',
-            { yPercent: -76 },
-            { yPercent: 0, duration: 3, ease: easing },
-            '<'
-        )
-        .fromTo(
-            '#joyride-y',
-            { yPercent: 67.5 },
-            { yPercent: 0, duration: 3, ease: easing },
-            '<'
-        )
-        .fromTo(
-            '#joyride-r',
-            { yPercent: 120.3 },
-            { yPercent: 0, duration: 3, ease: easing },
-            '<'
-        )
-        .fromTo(
-            '#joyride-i',
-            { yPercent: -100 },
-            { yPercent: 0, duration: 3, ease: easing },
-            '<'
-        )
-        .fromTo(
-            '#joyride-d',
-            { yPercent: -88 },
-            { yPercent: 0, duration: 3, ease: easing },
-            '<'
-        )
-        .fromTo(
-            '#joyride-e',
-            { yPercent: -123 },
-            { yPercent: 0, duration: 3, ease: easing },
-            '<'
+        .set('.preloader_svg g', { transformOrigin: 'bottom center', yPercent: 400 })
+        .to(
+            '.preloader_svg g',
+            { yPercent: 0, stagger: 0.1, duration: 1.5, ease: easing },
         )
         // Move the logo to its final position
-        .to(
-            '.preloader_logo',
-            { yPercent: -100, duration: 1.0, ease: 'power3.inOut', }
-        )
+        // .to(
+        //     '.preloader_logo',
+        //     { yPercent: -100, opacity: 0, duration: 0.8, ease: 'expo.inOut', }
+        // )
+        // .to(
+        //     '.preloader_svg g',
+        //     { yPercent: -100, opacity: 0, duration: 0.8, ease: 'power3.in' },
+        // )
         // Reveal the preloader section
         .to(
             '.preloader_section',
-            { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.inOut' },
-            '-=0.9',
+            { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.in' },
+            '-=0.2',
         )
         // Reveal the navbar section
         .from(
             '.navbar_section',
             { yPercent: -100, duration: 0.8, ease: "power4.out" },
-            '-=0.2',
+            '-=0.1',
+        )
+
+
+    const timelineLeave = gsap.timeline({ paused: true })
+        .to(
+            '.navbar_section',
+            { yPercent: -100, duration: 0.8, ease: "power4.out" },
+        )
+        .to(
+            '.preloader_section',
+            { clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)', duration: 0.8, ease: 'power3.in' },
+            '-=0.5',
         )
 
     barba.init({
@@ -98,14 +77,14 @@ export function pageTransition() {
                 return timeline.play();
             },
             async leave() {
-                return timeline.reverse();
+                return timelineLeave.play();
             },
             async after() {
                 return timeline.play();
             },
             async enter(data: any) {
                 resetWebflow(data);
-                
+
                 window.scrollTo(0, 0);
             }
         }]
