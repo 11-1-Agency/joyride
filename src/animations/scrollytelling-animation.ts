@@ -304,6 +304,7 @@ function closeTransition(timeline: gsap.core.Timeline) {
     });
 }
 
+// @ts-ignore
 function projectTransition(timeline: gsap.core.Timeline) {
     // get the section
     const section = document.querySelector<HTMLElement>(".expertise_section");
