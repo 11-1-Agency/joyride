@@ -33,7 +33,7 @@ export function modalAnimation(name: string, lenis: Lenis) {
         // Show the modal
         .set(
             target,
-            { display: 'flex' },
+            { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" },
         )
         // Hide the navbar content
         .set(
