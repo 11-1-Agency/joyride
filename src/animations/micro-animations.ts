@@ -1,5 +1,11 @@
 import { gsap } from 'gsap';
+
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+import Splide from '@splidejs/splide';
+import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
+// @ts-ignore
+import '@splidejs/splide/css/core';
 
 
 /**
@@ -92,4 +98,50 @@ export function fadeInAnimation() {
             }
         ),
     });
+}
+
+export function initSplide() {
+    const slider = document.getElementById('team-slide');
+
+    if (!slider) {
+        console.warn('Splide not found');
+        return;
+    }
+
+    var splide = new Splide(slider, {
+        mediaQuery: 'min',
+        type: 'loop',
+        drag: 'free',
+        speed: 1.2,
+        easingFunc: (x: number) => 1 - Math.pow(1 - x, 3),
+        fixedWidth: '20rem',
+        // gap: 'var(--spacing--x-bg)',
+        arrows: false,
+        pagination: false,
+        breakpoints: {
+            640: {
+                destroy: true,
+
+            },
+        }
+
+    });
+
+    splide.on('updated', () => {
+        slider.querySelector<HTMLElement>('.splide__track')?.style.setProperty('overflow', 'visible');
+
+        slider.querySelector<HTMLElement>('.team_list')?.style.setProperty('display', window.innerWidth > 640 ? 'grid' : 'flex');
+    })
+
+    splide.on('mounted', () => {
+        slider.querySelector<HTMLElement>('.splide__track')?.style.setProperty('overflow', 'visible');
+
+        slider.querySelector<HTMLElement>('.team_list')?.style.setProperty('display', window.innerWidth > 640 ? 'grid' : 'flex');
+    });
+
+    splide.on('destroy', () => {
+        slider.querySelector<HTMLElement>('.team_list')?.style.setProperty('display', window.innerWidth > 640 ? 'grid' : 'flex');
+    });
+
+    splide.mount({ AutoScroll });
 }
