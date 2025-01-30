@@ -175,7 +175,7 @@ function uspsTransition(timeline: gsap.core.Timeline) {
         scrub: true,
         snap: {
             snapTo: "labels",
-            duration: { min: 0.1, max: 0.5 },
+            duration: { min: 0.25, max: 0.75 },
             delay: 0.1,
             ease: "power1.inOut",
         },
@@ -185,6 +185,7 @@ function uspsTransition(timeline: gsap.core.Timeline) {
 function brandsTransition(timeline: gsap.core.Timeline) {
     // get the section
     const section = document.querySelector<HTMLElement>(".brands_section");
+    const icon = section?.querySelector<HTMLElement>(".rive_frame");
 
     if (!section) return;
 
@@ -201,14 +202,12 @@ function brandsTransition(timeline: gsap.core.Timeline) {
 
     const text = SplitType.create('.brands-transition-shape .features_heading')
 
-    console.log(text.lines)
-
     // add the animations to the timeline
     timeline
         .fromTo(
             brandsList,
-            { x: (brandsList?.offsetWidth ?? 0) * -1 - 100 },
-            { x: (brandsList?.offsetWidth ?? 0) + 100 }
+            { x: (brandsList?.offsetWidth ?? 0) * -1 - (icon?.offsetWidth ?? 0) },
+            { x: (brandsList?.offsetWidth ?? 0) + (icon?.offsetWidth ?? 0) }
         )
         .fromTo(
             ".brands-transition-shape",
