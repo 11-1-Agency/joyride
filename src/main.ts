@@ -1,4 +1,4 @@
-import { createInfiniteMarquee, fadeInAnimation, } from "./animations/micro-animations";
+import { createInfiniteMarquee, fadeInAnimation, initSplide, } from "./animations/micro-animations";
 import { pageTransition } from "./animations/preloader-animation";
 import { modalAnimation } from "./animations/modal-animation";
 
@@ -11,6 +11,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { scrollytelling } from "./animations/scrollytelling-animation";
 
+import { JoyrideRiveAnimation } from "./animations/rive-animations";
+
 import { ui } from "./animations";
 import "./style.css";
 
@@ -19,7 +21,7 @@ import "./style.css";
  */
 ui();
 
-gsap.registerPlugin(ScrollTrigger,CustomEase);
+gsap.registerPlugin(ScrollTrigger, CustomEase);
 
 /**
  * Initialize a new Lenis instance for smooth scrolling.
@@ -30,6 +32,8 @@ const lenis = new Lenis({
     duration: 0.8,
     easing: (x: number) => 1 - Math.pow(1 - x, 3),
 });
+
+const icon = new JoyrideRiveAnimation('canvas.rive_canvas');
 
 // Set up the smooth scroll animation.
 smoothScroll(lenis);
@@ -52,3 +56,7 @@ createInfiniteMarquee(".testimonial_list", ".testimonial-card", 10);
 
 // Fade in elements with a 'data-fade-in' attribute.
 fadeInAnimation();
+
+initSplide();
+
+icon.init();

@@ -1,5 +1,4 @@
 import * as rive from "@rive-app/canvas";
-import { Artboard } from "@rive-app/canvas/rive_advanced.mjs";
 
 export class JoyrideRiveAnimation {
     private target: string;
