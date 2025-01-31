@@ -30,21 +30,12 @@ export function pageTransition() {
     const easing = CustomEase.create('superease', '.08,.73,0,1');
 
     timeline
+        .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 0, 0 0)" })
         .set('.preloader_svg g', { transformOrigin: 'bottom center', yPercent: 400 })
         .to(
             '.preloader_svg g',
             { yPercent: 0, stagger: 0.1, duration: 1.5, ease: easing },
         )
-        // Move the logo to its final position
-        // .to(
-        //     '.preloader_logo',
-        //     { yPercent: -100, opacity: 0, duration: 0.8, ease: 'expo.inOut', }
-        // )
-        // .to(
-        //     '.preloader_svg g',
-        //     { yPercent: -100, opacity: 0, duration: 0.8, ease: 'power3.in' },
-        // )
-        // Reveal the preloader section
         .to(
             '.preloader_section',
             { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.in' },
@@ -59,6 +50,7 @@ export function pageTransition() {
 
 
     const timelineLeave = gsap.timeline({ paused: true })
+        .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" })
         .to(
             '.navbar_section',
             { yPercent: -100, duration: 0.8, ease: "power4.out" },
