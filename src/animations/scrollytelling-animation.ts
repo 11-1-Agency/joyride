@@ -336,7 +336,7 @@ function projectTransition(timeline: gsap.core.Timeline) {
     // initiate the timeline
     const path = {
         element: document.getElementById("expertise-transition-path"),
-        start: "M100 100H0V0H49.5H100V100Z",
+        start: "M100 50.5C100 78.1142 77.6142 100 50 100C22.3858 100 0 77.1142 0 49.5C0 21.8858 22.3858 0 50 0C77.6142 0 100 22.8858 100 50.5Z",
         end: "M100 100H0V0H49.5H100V100Z",
     };
 
