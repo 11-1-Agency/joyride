@@ -221,10 +221,16 @@ function brandsTransition(timeline: gsap.core.Timeline) {
             '<'
         )
         .fromTo(
-            text.lines,
-            { background: "linear-gradient(90deg, transparent 0%, black 0%)" },
-            { background: "linear-gradient(90deg, transparent 100%, black 100%)" },
+            text.lines ? text.lines[0] : null,
+            { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", xPercent: -30  },
+            { clipPath: "polygon(100% 0, 0 0, 0 100%, 100% 100%)", xPercent: 0 },
             '-=0.3'
+        )
+        .fromTo(
+            text.lines ? text.lines[1] : null,
+            { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", xPercent: -70  },
+            { clipPath: "polygon(100% 0, 0 0, 0 100%, 100% 100%)", xPercent: 0 },
+            '<'
         )
         .set(wrapper, { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" });
 
