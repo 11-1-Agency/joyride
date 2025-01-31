@@ -98,7 +98,7 @@ export class JoyrideRiveAnimation {
                 console.log(false); // User stopped scrolling
 
                 input.value = false;
-            }, 200); // Adjust delay as needed
+            }, 1); // Adjust delay as needed
         });
     }
 
