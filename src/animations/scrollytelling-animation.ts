@@ -1,6 +1,5 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import SplitType from 'split-type'
 
 export function scrollytelling() {
     const heroAnimation = gsap.timeline({});
@@ -82,17 +81,19 @@ function uspsTransition(timeline: gsap.core.Timeline) {
     const section = document.querySelector<HTMLElement>(".usp_section");
 
     if (!section) return;
-
+    
+    
     // create a wrapper for the section
     const wrapper = document.createElement("div");
     section.parentNode?.insertBefore(wrapper, section);
     wrapper.appendChild(section);
-
+    
     // set the styles for the section and the wrapper
     gsap.set(wrapper, { height: "800vh", position: "relative" });
-
+    
     // add the animations to the timeline
     const properties = dotScale();
+    
     if (!properties) return;
 
     const container = document
@@ -195,19 +196,19 @@ function brandsTransition(timeline: gsap.core.Timeline) {
     wrapper.appendChild(section);
 
     // set the styles for the section and the wrapper
-    gsap.set(wrapper, { height: "200vh", position: "relative", zIndex: 2 });
+    gsap.set(wrapper, { height: "500vh", position: "relative", zIndex: 2 });
     gsap.set(section, { position: "sticky", top: 0 });
 
     const brandsList = document.querySelector<HTMLElement>(".brands_list");
 
-    const text = SplitType.create('.brands-transition-shape .features_heading')
+    const offset = window.innerWidth * 0.5 + (brandsList?.offsetWidth ?? 0) * 0.5;
 
     // add the animations to the timeline
     timeline
         .fromTo(
             brandsList,
-            { x: (brandsList?.offsetWidth ?? 0) * -1 - (icon?.offsetWidth ?? 0) },
-            { x: (brandsList?.offsetWidth ?? 0) + (icon?.offsetWidth ?? 0) }
+            { x: offset * -1 - (icon?.offsetWidth ?? 0) },
+            { x: offset + (icon?.offsetWidth ?? 0) }
         )
         .fromTo(
             ".brands-transition-shape",
@@ -216,20 +217,20 @@ function brandsTransition(timeline: gsap.core.Timeline) {
             "-=0.33"
         )
         .set(
-            text.lines,
-            { width: 'fit-content', margin: '0px auto' },
+            section.querySelectorAll(".features_heading span"),
+            { width: 'fit-content', margin: '0px auto', display: 'inline-block' },
             '<'
         )
         .fromTo(
-            text.lines ? text.lines[0] : null,
-            { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", xPercent: -30  },
-            { clipPath: "polygon(100% 0, 0 0, 0 100%, 100% 100%)", xPercent: 0 },
+            section.querySelector('.features_heading .line-01'),
+            {  xPercent: -30  },
+            { xPercent: 0 },
             '-=0.3'
         )
         .fromTo(
-            text.lines ? text.lines[1] : null,
-            { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", xPercent: -70  },
-            { clipPath: "polygon(100% 0, 0 0, 0 100%, 100% 100%)", xPercent: 0 },
+            section.querySelector('.features_heading .line-02'),
+            { xPercent: -70  },
+            { xPercent: 0 },
             '<'
         )
         .set(wrapper, { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" });
@@ -328,29 +329,29 @@ function projectTransition(timeline: gsap.core.Timeline) {
     // projectsWrapper.appendChild(section);
 
     // set the styles for the section and the wrapper
-    gsap.set(wrapper, { height: "200vh", position: "relative" });
-    gsap.set(section, { position: "sticky", top: 0 });
+    // gsap.set(wrapper, { height: "fit-content", position: "sticky", bottom: 0 });
+    // gsap.set(section, { position: "sticky", top: 0 });
 
     // gsap.set(projectsWrapper, { paddingTop: "100vh", position: "relative" });
 
     // initiate the timeline
-    const path = {
-        element: document.getElementById("expertise-transition-path"),
-        start: "M100 50.5C100 78.1142 77.6142 100 50 100C22.3858 100 0 77.1142 0 49.5C0 21.8858 22.3858 0 50 0C77.6142 0 100 22.8858 100 50.5Z",
-        end: "M100 100H0V0H49.5H100V100Z",
-    };
+    // const path = {
+    //     element: document.getElementById("expertise-transition-path"),
+    //     start: "M100 50.5C100 78.1142 77.6142 100 50 100C22.3858 100 0 77.1142 0 49.5C0 21.8858 22.3858 0 50 0C77.6142 0 100 22.8858 100 50.5Z",
+    //     end: "M100 100H0V0H49.5H100V100Z",
+    // };
 
     // add the animations to the timeline
-    timeline
-        .set(
-            path.element,
-            { attr: { d: path.start } },
-        )
-        .fromTo(
-            path.element,
-            { scale: 0, rotation: 0, transformOrigin: "center center" },
-            { scale: 1.5, rotation: (360 * 2), transformOrigin: "center center", ease: "power4.inOut", }
-        )
+    // timeline
+    //     .set(
+    //         path.element,
+    //         { attr: { d: path.start } },
+    //     )
+    //     .fromTo(
+    //         path.element,
+    //         { scale: 0, rotation: 0, transformOrigin: "center center" },
+    //         { scale: 1.5, rotation: (360 * 2), transformOrigin: "center center", ease: "power4.inOut", }
+    //     )
 
     // set the scroll trigger
     ScrollTrigger.create({
@@ -367,46 +368,45 @@ function projectTransition(timeline: gsap.core.Timeline) {
 
 // Helper functions
 
+/**
+ * Calculates the scale and transformation properties for the dot element relative to the heading.
+ * @returns An object containing scale, x, y, and transformOrigin properties.
+ */
 function dotScale() {
-    // 1. Get references to the heading and the dot
+    // Get references to the section, heading, and dot elements
     const section = document.querySelector<HTMLElement>(".usp_section");
     const heading = document.getElementById("problem_heading");
     const dot = document.getElementById("dot");
 
+    // Return early if any of the elements are not found
     if (!dot || !heading || !section) return;
 
+    // Calculate the transform origin for the dot element
     const transformOrigin = {
-        x:
-            dot.getBoundingClientRect().left -
-            heading.getBoundingClientRect().left +
-            dot.offsetWidth * 0.5,
-        y:
-            dot.getBoundingClientRect().top -
-            heading.getBoundingClientRect().top +
-            dot.offsetHeight * 0.215,
+        x: dot.getBoundingClientRect().left - heading.getBoundingClientRect().left + dot.offsetWidth * 0.5,
+        y: dot.getBoundingClientRect().top - heading.getBoundingClientRect().top + dot.offsetHeight * 0.215,
     };
 
+    // Calculate the transformation ratio based on the window size and element positions
     const ratio = {
-        x:
-            window.innerWidth * 0.5 -
-            dot.getBoundingClientRect().left -
-            dot.offsetWidth * 0.9,
+        x: window.innerWidth * 0.5 - dot.getBoundingClientRect().left - dot.offsetWidth * 0.9,
         y: window.innerHeight * 0.5 - heading.offsetTop - dot.offsetHeight * 0.199,
     };
 
+    // Calculate the percentage transformation for the x and y axes
     const transform = {
         x: (ratio.x / heading.clientWidth) * 100,
         y: (ratio.y / heading.clientHeight) * 100,
     };
 
-    const d = Math.sqrt(
-        Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)
-    );
+    // Calculate the diagonal distance of the window
+    const d = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2));
 
+    // Calculate the scale factor for the dot element
     const scale = d / dot.offsetWidth;
 
+    // Return the calculated scale and transformation properties
     return {
-        // scale: 8080 * (parseFloat(fontSize) / window.innerWidth),
         scale: scale * 2.5,
         x: transform.x,
         y: transform.y,

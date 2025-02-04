@@ -50,7 +50,7 @@ export function createInfiniteMarquee(containerSelector: string, itemSelector: s
      * @param duration The duration of the animation in seconds
      * @param ease The easing function to be used for the animation
      */
-    gsap.timeline({ repeat: -1, defaults: { ease: "none" } })
+    const timeline = gsap.timeline({ repeat: -1, defaults: { ease: "none" } })
         .to(
             items,
             {
@@ -70,6 +70,9 @@ export function createInfiniteMarquee(containerSelector: string, itemSelector: s
                 }
             }
         );
+
+    container.addEventListener("mouseenter", () => timeline.pause());
+    container.addEventListener("mouseleave", () => timeline.play());
 }
 
 /**
@@ -145,3 +148,38 @@ export function initSplide() {
 
     splide.mount({ AutoScroll });
 }
+
+
+export function flashSVGs(containerSelector: string, duration: number = 1) {
+    const container = document.querySelector(containerSelector);
+    if (!container) {
+        console.error("Container not found");
+        return;
+    }
+    
+    const svgs = Array.from(container.querySelectorAll(".modal_grid-item"));
+    if (svgs.length === 0) {
+        console.error("No SVGs found in container");
+        return;
+    }
+
+    let currentIndex = 0;
+
+    // Hide all SVGs initially
+    gsap.set(svgs, { autoAlpha: 0 });
+    gsap.set(svgs[0], { autoAlpha: 1 });
+
+    function cycleSVGs() {
+        const nextIndex = (currentIndex + 1) % svgs.length;
+        
+        gsap.to(svgs[currentIndex], { autoAlpha: 0, duration: 0.5, ease: "power2.out" });
+        gsap.to(svgs[nextIndex], { autoAlpha: 1, duration: 0.5, ease: "power2.in" });
+        
+        currentIndex = nextIndex;
+    }
+
+    setInterval(cycleSVGs, duration * 1000);
+}
+
+// Usage example
+// flashSVGs("#team-faces", 0.8);

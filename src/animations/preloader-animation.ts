@@ -40,8 +40,22 @@ export function pageTransition(lenis: Lenis) {
         .set('.preloader_svg g', { transformOrigin: 'bottom center', yPercent: 400 })
         .to(
             '.preloader_svg g',
-            { yPercent: 0, stagger: 0.1, duration: 1.5, ease: easing },
+            { yPercent: 0, delay: "random(0, 0.5)", duration: 1.5, ease: easing },
         )
+        .to(
+            '.preloader_section',
+            { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.in' },
+            '-=0.2',
+        )
+        // Reveal the navbar section
+        .from(
+            '.navbar_section',
+            { yPercent: -100, duration: 0.8, ease: "power4.out" },
+            '-=0.1',
+        )
+        .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)" })
+
+    timelineEnter
         .to(
             '.preloader_section',
             { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.in' },
@@ -55,8 +69,7 @@ export function pageTransition(lenis: Lenis) {
         )
 
 
-    const timelineLeave = gsap.timeline({ paused: true })
-        .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" })
+    timelineLeave
         .to(
             '.navbar_section',
             { yPercent: -100, duration: 0.8, ease: "power4.out" },
@@ -67,10 +80,12 @@ export function pageTransition(lenis: Lenis) {
             '-=0.5',
         )
 
+    console.log(timeline);
+
     barba.init({
         sync: true,
         transitions: [{
-            name: 'opacity-transition',
+            name: 'default-transition',
             async once() {
                 return timeline.play();
             },
@@ -78,7 +93,7 @@ export function pageTransition(lenis: Lenis) {
                 return timelineLeave.play();
             },
             async after() {
-                return timeline.play();
+                return timelineEnter.play();
             },
             async enter(data: any) {
                 resetWebflow(data);
