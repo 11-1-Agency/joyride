@@ -69,6 +69,7 @@ export function modalAnimation(name: string, lenis: Lenis) {
 
         // Stop the smooth scrolling
         lenis.stop();
+        document.body.style.setProperty('overflow', 'hidden');
     })
     
     close.addEventListener('click', () => {
@@ -76,5 +77,6 @@ export function modalAnimation(name: string, lenis: Lenis) {
 
         // Start the smooth scrolling
         lenis.start();
+        document.body.style.setProperty('overflow', 'auto');
     })
 }
