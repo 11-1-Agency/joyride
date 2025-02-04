@@ -39,7 +39,7 @@ const icon = new JoyrideRiveAnimation('canvas.rive_canvas');
 smoothScroll(lenis);
 
 // Start the preloader animation.
-pageTransition();
+pageTransition(lenis);
 
 // Start the scrollytelling animation.
 scrollytelling();

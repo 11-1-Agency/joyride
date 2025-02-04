@@ -1,6 +1,8 @@
 import { gsap } from 'gsap';
 import { CustomEase } from "gsap/CustomEase";
 
+import Lenis from "lenis";
+
 // @ts-ignore
 import barba from '@barba/core';
 
@@ -24,8 +26,12 @@ function resetWebflow(data: any) {
     window.Webflow && window.Webflow.require("ix2").init();
 }
 
-export function pageTransition() {
-    const timeline = gsap.timeline({ paused: true })
+export function pageTransition(lenis: Lenis) {
+    const timeline = gsap.timeline({ paused: true, onStart: () => lenis.stop(), onComplete: () => lenis.start() });
+
+    const timelineLeave = gsap.timeline({ paused: true, onStart: () => lenis.stop(), onComplete: () => lenis.start() });
+
+    const timelineEnter = gsap.timeline({ paused: true, onStart: () => lenis.stop(), onComplete: () => lenis.start() });
 
     const easing = CustomEase.create('superease', '.08,.73,0,1');
 
