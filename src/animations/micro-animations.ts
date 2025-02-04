@@ -180,6 +180,3 @@ export function flashSVGs(containerSelector: string, duration: number = 1) {
 
     setInterval(cycleSVGs, duration * 1000);
 }
-
-// Usage example
-// flashSVGs("#team-faces", 0.8);

@@ -1,4 +1,4 @@
-import { createInfiniteMarquee, fadeInAnimation, initSplide, } from "./animations/micro-animations";
+import { createInfiniteMarquee, fadeInAnimation, flashSVGs, initSplide, } from "./animations/micro-animations";
 import { pageTransition } from "./animations/preloader-animation";
 import { modalAnimation } from "./animations/modal-animation";
 
@@ -60,3 +60,5 @@ fadeInAnimation();
 initSplide();
 
 icon.init();
+
+flashSVGs("#team-faces", 0.8);
