@@ -52,7 +52,7 @@ modals.forEach((modal) => {
 });
 
 // Create an infinite marquee animation for the testimonial cards.
-createInfiniteMarquee(".testimonial_list", ".testimonial-card", 10);
+createInfiniteMarquee(".testimonial_list", ".testimonial-card", 30);
 
 // Fade in elements with a 'data-fade-in' attribute.
 fadeInAnimation();
