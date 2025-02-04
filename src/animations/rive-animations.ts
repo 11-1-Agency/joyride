@@ -10,8 +10,6 @@ export class JoyrideRiveAnimation {
     init() {
         const canvases = document.querySelectorAll<HTMLCanvasElement>(this.target);
 
-        console.clear();
-
         canvases.forEach((canvas) => {
             if (!canvas.dataset.source) {
                 console.warn("No source specified for canvas");
@@ -34,23 +32,17 @@ export class JoyrideRiveAnimation {
     // ------------------------------------------------------------------------
 
     private onloadFunction(functionName: string | undefined, rive: rive.Rive, canvas: HTMLCanvasElement) {
-        console.debug('function run')
-
         switch (functionName) {
             case 'scroll-runner':
-                console.log('scroll runner')
                 this.scrollRunner(rive, canvas);
                 break;
             case 'cursor-tracking':
-                console.log('cursor tracking')
                 this.cursorTracking(rive, canvas);
                 break;
             case 'view-play':
-                console.log('view play')
                 this.viewPlay(rive, canvas);
                 break;
             default:
-                // console.warn(`id:#${canvas.dataset.artboard} requested function "${functionName}" but it was not found.`);
                 rive.resizeDrawingSurfaceToCanvas()
         }
     }
@@ -83,7 +75,6 @@ export class JoyrideRiveAnimation {
 
         window.addEventListener("scroll", () => {
             if (!isScrolling) {
-                console.log(true); // User started scrolling
                 input.value = true;
             }
 
@@ -95,7 +86,6 @@ export class JoyrideRiveAnimation {
             // Set a timeout to detect when scrolling stops
             timeout = setTimeout(() => {
                 isScrolling = false;
-                console.log(false); // User stopped scrolling
 
                 input.value = false;
             }, 1); // Adjust delay as needed
@@ -105,28 +95,36 @@ export class JoyrideRiveAnimation {
     private cursorTracking(rive: rive.Rive, canvas: HTMLCanvasElement) {
         // Resize the Rive drawing surface to match the canvas size.
         rive.resizeDrawingSurfaceToCanvas();
-
+    
         // Retrieve the inputs for the specified state machine.
         const inputs = rive.stateMachineInputs(canvas.dataset.statemachines ?? '');
-
-        // Replace xAxis with the name of your x input
+    
+        // Find the x and y axis inputs.
         const xInput = inputs.find(({ name }) => name === "x-axis");
-
-        // Replace yAxis with the name of your y input
         const yInput = inputs.find((input) => input.name === "y-axis");
-
+    
         if (!xInput || !yInput) {
             console.warn("Input not found");
             return;
         }
-
-        const maxWidth = window.innerWidth;
-        const maxHeight = window.innerHeight;
-        // This assumes your blend state for x and y axis goes from 0-100
-        window.addEventListener("mousemove", function (e) {
-            console.log(e);
-            xInput.value = (e.x / maxWidth) * 100;
-            yInput.value = (e.y / maxHeight) * 100;
+    
+        // Listen for mouse movements over the entire document.
+        document.addEventListener("mousemove", function (e) {
+            // Get the canvas's position and dimensions.
+            const rect = canvas.getBoundingClientRect();
+    
+            // Calculate the mouse position relative to the canvas.
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+    
+            // Optional: Clamp values so they don't exceed 0-100 if the mouse is off the canvas.
+            const clampedX = Math.max(0, Math.min(rect.width, x));
+            const clampedY = Math.max(0, Math.min(rect.height, y));
+    
+            // Convert the relative coordinates to a percentage (0-100).
+            // When the mouse is in the center of the canvas, these will be 50.
+            xInput.value = (clampedX / rect.width) * 100;
+            yInput.value = (clampedY / rect.height) * 100;
         });
     }
 
