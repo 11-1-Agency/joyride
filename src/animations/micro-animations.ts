@@ -14,65 +14,67 @@ import '@splidejs/splide/css/core';
  * @param itemSelector The selector for the items to be scrolled
  * @param speed Optional. The speed of the animation in pixels per second. Default is 50. A negative value will scroll the items from right to left.
  */
-export function createInfiniteMarquee(containerSelector: string, itemSelector: string, speed: number = 50): void {
-    const container = document.querySelector<HTMLElement>(containerSelector);
+export function runCarousel(): void {
+    const containers = document.querySelectorAll<HTMLElement>("[data-carousel]");
 
-    if (!container) {
-        console.warn(`No container found for selector: ${containerSelector}`);
-        return;
-    }
-
-    // Collect all items
-    const items = Array.from(
-        container.querySelectorAll<HTMLElement>(itemSelector)
-    );
-
-    if (items.length === 0) {
-        console.warn(`No marquee items found for selector: ${itemSelector}`);
-        return;
-    }
-
-    const itemWidths = items.map(item => item.offsetWidth);
-
-    // Duplicate the items in the container
-    const clones = items.map(item => {
-        const clone = item.cloneNode(true) as HTMLElement;
-        container.appendChild(clone);
-        return clone;
+    containers.forEach(container => {
+        carousel(container);
     });
 
-    items.push(...clones);
+    function carousel(container: HTMLElement) {
 
-    const translation = (itemWidths.reduce((a, c) => a + c, 0) + (itemWidths.length - 1) * 32);
+        const speed = Number.parseInt(container.dataset.speed || "30");
 
-    /**
-     * Creates a GSAP timeline that will be repeated in an infinite loop.
-     * @param duration The duration of the animation in seconds
-     * @param ease The easing function to be used for the animation
-     */
-    const timeline = gsap.timeline({ repeat: -1, defaults: { ease: "none" } })
-        .to(
-            items,
-            {
-                x: (speed > 0 ? 0.5 : -0.5) * translation,
-                duration: Math.abs(speed),
-                ease: "linear",
-                /**
-                 * Custom modifier function for the x property.
-                 * @param value The current value of the x property
-                 */
-                modifiers: {
-                    x: (value) => {
-                        const xPos = parseFloat(value);
-                        const totalWidth = 0.5 * translation;
-                        return gsap.utils.wrap(-totalWidth, 1, xPos) + 'px';
+        // Collect all items
+        const items = Array.from(container.children) as HTMLElement[];
+
+        if (items.length === 0) {
+            console.warn(`No marquee items found for selector: ${container.className}`);
+            return;
+        }
+
+        const itemWidths = items.map(item => item.offsetWidth);
+
+        // Duplicate the items in the container
+        const clones = items.map(item => {
+            const clone = item.cloneNode(true) as HTMLElement;
+            container.appendChild(clone);
+            return clone;
+        });
+
+        items.push(...clones);
+
+        const translation = (itemWidths.reduce((a, c) => a + c, 0) + (itemWidths.length - 1) * 32);
+
+        /**
+         * Creates a GSAP timeline that will be repeated in an infinite loop.
+         * @param duration The duration of the animation in seconds
+         * @param ease The easing function to be used for the animation
+         */
+        const timeline = gsap.timeline({ repeat: -1, defaults: { ease: "none" } })
+            .to(
+                items,
+                {
+                    x: (speed > 0 ? 0.5 : -0.5) * translation,
+                    duration: Math.abs(speed),
+                    ease: "linear",
+                    /**
+                     * Custom modifier function for the x property.
+                     * @param value The current value of the x property
+                     */
+                    modifiers: {
+                        x: (value) => {
+                            const xPos = parseFloat(value);
+                            const totalWidth = 0.5 * translation;
+                            return gsap.utils.wrap(-totalWidth, 1, xPos) + 'px';
+                        }
                     }
                 }
-            }
-        );
+            );
 
-    container.addEventListener("mouseenter", () => timeline.pause());
-    container.addEventListener("mouseleave", () => timeline.play());
+        container.addEventListener("mouseenter", () => timeline.pause());
+        container.addEventListener("mouseleave", () => timeline.play());
+    }
 }
 
 /**
@@ -156,7 +158,7 @@ export function flashSVGs(containerSelector: string, duration: number = 1) {
         console.error("Container not found");
         return;
     }
-    
+
     const svgs = Array.from(container.querySelectorAll(".modal_grid-item"));
     if (svgs.length === 0) {
         console.error("No SVGs found in container");
@@ -171,10 +173,10 @@ export function flashSVGs(containerSelector: string, duration: number = 1) {
 
     function cycleSVGs() {
         const nextIndex = (currentIndex + 1) % svgs.length;
-        
+
         gsap.to(svgs[currentIndex], { autoAlpha: 0, duration: 0.5, ease: "power2.out" });
         gsap.to(svgs[nextIndex], { autoAlpha: 1, duration: 0.5, ease: "power2.in" });
-        
+
         currentIndex = nextIndex;
     }
 

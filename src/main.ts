@@ -1,20 +1,21 @@
-import { createInfiniteMarquee, fadeInAnimation, flashSVGs, initSplide, } from "./animations/micro-animations";
-import { pageTransition } from "./animations/preloader-animation";
-import { modalAnimation } from "./animations/modal-animation";
-
 import Lenis from "lenis";
-import { smoothScroll } from "./animations/smooth-scroll-animation";
 
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { scrollytelling } from "./animations/scrollytelling-animation";
-
-import { JoyrideRiveAnimation } from "./animations/rive-animations";
-
 import { ui } from "./animations";
 import "./style.css";
+
+// import { pageTransition } from "./animations/preloader-animation";
+import { modalAnimation } from "./animations/modal-animation";
+
+import { smoothScroll } from "./animations/smooth-scroll-animation";
+// import { scrollytelling } from "./animations/scrollytelling-animation";
+
+import { JoyrideRiveAnimation } from "./animations/rive-animations";
+// import { runCarousel, fadeInAnimation, flashSVGs, initSplide, } from "./animations/micro-animations";
+import { runCarousel, fadeInAnimation} from "./animations/micro-animations";
 
 /**
  * Initialize the UI by adding event listeners and set up the initial state.
@@ -33,32 +34,26 @@ const lenis = new Lenis({
     easing: (x: number) => 1 - Math.pow(1 - x, 3),
 });
 
-const icon = new JoyrideRiveAnimation('canvas.rive_canvas');
+new JoyrideRiveAnimation('canvas.rive_canvas').init();
 
 // Set up the smooth scroll animation.
 smoothScroll(lenis);
 
 // Start the preloader animation.
-pageTransition(lenis);
+// pageTransition(lenis);
 
 // Start the scrollytelling animation.
-scrollytelling();
+// scrollytelling();
 
 // Initialize the modal animation for each modal.
-const modals = ["joyride", "ethics", "team", "about-us"];
-
-modals.forEach((modal) => {
-    modalAnimation(modal, lenis);
-});
+modalAnimation(["joyride", "ethics", "team", "about-us"], lenis);
 
 // Create an infinite marquee animation for the testimonial cards.
-createInfiniteMarquee(".testimonial_list", ".testimonial-card", 30);
+runCarousel();
 
 // Fade in elements with a 'data-fade-in' attribute.
 fadeInAnimation();
 
-initSplide();
+// initSplide();
 
-icon.init();
-
-flashSVGs("#team-faces", 0.8);
+// flashSVGs("#team-faces", 0.8);

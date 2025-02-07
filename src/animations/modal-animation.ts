@@ -6,7 +6,12 @@ import Lenis from 'lenis';
  * @param {string} name - The name of the modal element
  * @param {Lenis} lenis - The Lenis instance
  */
-export function modalAnimation(name: string, lenis: Lenis) {
+
+export function modalAnimation(modals: string[], lenis: Lenis) {
+    modals.forEach((modal) => init(modal, lenis));
+}
+
+function init(name: string, lenis: Lenis) {
     const timeline = gsap.timeline({ paused: true })
 
     // Get the trigger, target and close elements
@@ -71,7 +76,7 @@ export function modalAnimation(name: string, lenis: Lenis) {
         lenis.stop();
         document.body.style.setProperty('overflow', 'hidden');
     })
-    
+
     close.addEventListener('click', () => {
         timeline.reverse();
 
