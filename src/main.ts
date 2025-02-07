@@ -46,7 +46,7 @@ smoothScroll(lenis);
 // scrollytelling();
 
 // Initialize the modal animation for each modal.
-modalAnimation(["joyride", "ethics", "team", "about-us"], lenis);
+modalAnimation(lenis);
 
 // Create an infinite marquee animation for the testimonial cards.
 runCarousel();

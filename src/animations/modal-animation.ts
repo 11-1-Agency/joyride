@@ -7,11 +7,15 @@ import Lenis from 'lenis';
  * @param {Lenis} lenis - The Lenis instance
  */
 
-export function modalAnimation(modals: string[], lenis: Lenis) {
-    modals.forEach((modal) => init(modal, lenis));
+export function modalAnimation(lenis: Lenis) {
+    const triggers = document.querySelectorAll<HTMLElement>(`[data-modal-trigger]`);
+
+    triggers.forEach((trigger) => init(trigger.dataset.modalTrigger, lenis));
 }
 
-function init(name: string, lenis: Lenis) {
+function init(name: string | undefined, lenis: Lenis) {
+    if (!name) return;
+
     const timeline = gsap.timeline({ paused: true })
 
     // Get the trigger, target and close elements
