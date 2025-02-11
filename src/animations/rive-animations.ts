@@ -21,9 +21,13 @@ export class JoyrideRiveAnimation {
                 src: canvas.dataset.source,
                 autoplay: canvas.dataset.autoplay === "true",
                 artboard: canvas.dataset.artboard,
-                stateMachines: canvas.dataset.statemachines,
+                stateMachines: canvas.dataset.delay ? undefined : canvas.dataset.statemachines,
+                animations: !canvas.dataset.delay ? undefined :canvas.dataset.animations,
                 onLoad: () => {
                     this.onloadFunction(canvas.dataset.function, r, canvas)
+                },
+                onLoop: () => {
+                    this.delayedPlay(r, canvas)
                 },
             });
         });
@@ -95,32 +99,32 @@ export class JoyrideRiveAnimation {
     private cursorTracking(rive: rive.Rive, canvas: HTMLCanvasElement) {
         // Resize the Rive drawing surface to match the canvas size.
         rive.resizeDrawingSurfaceToCanvas();
-    
+
         // Retrieve the inputs for the specified state machine.
         const inputs = rive.stateMachineInputs(canvas.dataset.statemachines ?? '');
-    
+
         // Find the x and y axis inputs.
         const xInput = inputs.find(({ name }) => name === "x-axis");
         const yInput = inputs.find((input) => input.name === "y-axis");
-    
+
         if (!xInput || !yInput) {
             console.warn("Input not found");
             return;
         }
-    
+
         // Listen for mouse movements over the entire document.
         document.addEventListener("mousemove", function (e) {
             // Get the canvas's position and dimensions.
             const rect = canvas.getBoundingClientRect();
-    
+
             // Calculate the mouse position relative to the canvas.
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-    
+
             // Optional: Clamp values so they don't exceed 0-100 if the mouse is off the canvas.
             const clampedX = Math.max(0, Math.min(rect.width, x));
             const clampedY = Math.max(0, Math.min(rect.height, y));
-    
+
             // Convert the relative coordinates to a percentage (0-100).
             // When the mouse is in the center of the canvas, these will be 50.
             xInput.value = (clampedX / rect.width) * 100;
@@ -162,5 +166,24 @@ export class JoyrideRiveAnimation {
         });
 
         observer.observe(canvas);
+    }
+
+    private delayedPlay(rive: rive.Rive, canvas: HTMLCanvasElement) {
+        // Check if the canvas has a delay specified in its dataset
+        if (!canvas.dataset.delay) return;
+
+        // Parse the delay value from the dataset
+        const delay = parseFloat(canvas.dataset.delay);
+
+        // Ensure the parsed delay is a valid number
+        if (!isNaN(delay)) {
+            // Pause the animation immediately
+            rive.pause();
+
+            // Wait for the specified delay duration before resuming the animation
+            setTimeout(() => {
+                rive.play(); // Resume playing the animation
+            }, delay); // Delay in milliseconds
+        }
     }
 }
