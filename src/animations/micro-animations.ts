@@ -7,74 +7,21 @@ import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
 // @ts-ignore
 import '@splidejs/splide/css/core';
 
+export function splideCarousel() {
+    const carousel = document.querySelectorAll<HTMLElement>(".splide");
 
-/**
- * Creates an infinite marquee animation. The animation will scroll the given items in the container in an infinite loop.
- * @param containerSelector The selector for the container element that contains the items
- * @param itemSelector The selector for the items to be scrolled
- * @param speed Optional. The speed of the animation in pixels per second. Default is 50. A negative value will scroll the items from right to left.
- */
-export function runCarousel(): void {
-    const containers = document.querySelectorAll<HTMLElement>("[data-carousel]");
-
-    containers.forEach(container => {
-        carousel(container);
-    });
-
-    function carousel(container: HTMLElement) {
-
-        const speed = Number.parseInt(container.dataset.speed || "30");
-
-        // Collect all items
-        const items = Array.from(container.children) as HTMLElement[];
-
-        if (items.length === 0) {
-            console.warn(`No marquee items found for selector: ${container.className}`);
-            return;
-        }
-
-        const itemWidths = items.map(item => item.offsetWidth);
-
-        // Duplicate the items in the container
-        const clones = items.map(item => {
-            const clone = item.cloneNode(true) as HTMLElement;
-            container.appendChild(clone);
-            return clone;
+    carousel.forEach((slider) => {
+        var splide = new Splide(slider, {
+            type: 'loop',
+            drag: 'free',
+            speed: Number.parseFloat(slider.dataset.speed || '1.2'),
+            fixedWidth: slider.dataset.width || 'n/a',
+            arrows: false,
+            pagination: false,
         });
 
-        items.push(...clones);
-
-        const translation = (itemWidths.reduce((a, c) => a + c, 0) + (itemWidths.length - 1) * 32);
-
-        /**
-         * Creates a GSAP timeline that will be repeated in an infinite loop.
-         * @param duration The duration of the animation in seconds
-         * @param ease The easing function to be used for the animation
-         */
-        const timeline = gsap.timeline({ repeat: -1, defaults: { ease: "none" } })
-            .to(
-                items,
-                {
-                    x: (speed > 0 ? 0.5 : -0.5) * translation,
-                    duration: Math.abs(speed),
-                    ease: "linear",
-                    /**
-                     * Custom modifier function for the x property.
-                     * @param value The current value of the x property
-                     */
-                    modifiers: {
-                        x: (value) => {
-                            const xPos = parseFloat(value);
-                            const totalWidth = 0.5 * translation;
-                            return gsap.utils.wrap(-totalWidth, 1, xPos) + 'px';
-                        }
-                    }
-                }
-            );
-
-        container.addEventListener("mouseenter", () => timeline.pause());
-        container.addEventListener("mouseleave", () => timeline.play());
-    }
+        splide.mount({ AutoScroll });
+    })
 }
 
 /**
@@ -105,80 +52,100 @@ export function fadeInAnimation() {
     });
 }
 
-export function initSplide() {
-    const slider = document.getElementById('team-slide');
+export function animateFacesIcons(column: HTMLElement): void {
 
-    if (!slider) {
-        console.warn('Splide not found');
+    const duration = Number.parseFloat(column.dataset.duration || '1.0');
+    const delay = Number.parseFloat(column.dataset.delay || '2.0');
+
+    // Grab the face and icon containers.
+    const faceContainer = column.querySelector(".face_container");
+    const iconContainer = column.querySelector(".face_icon-wrap");
+
+    if (!faceContainer || !iconContainer) {
+        console.warn("Column is missing .face_container or .face_icon-wrap.");
         return;
     }
 
-    var splide = new Splide(slider, {
-        mediaQuery: 'min',
-        type: 'loop',
-        drag: 'free',
-        speed: 1.2,
-        easingFunc: (x: number) => 1 - Math.pow(1 - x, 3),
-        fixedWidth: '20rem',
-        // gap: 'var(--spacing--x-bg)',
-        arrows: false,
-        pagination: false,
-        breakpoints: {
-            640: {
-                destroy: true,
+    // Collect the faces and icons. Adjust selectors as needed:
+    const faces = Array.from(faceContainer.children) as HTMLElement[];
+    const icons = Array.from(iconContainer.children) as HTMLElement[];
 
-            },
+    // Make sure the length matches so index i in faces = index i in icons.
+    if (faces.length !== icons.length) {
+        console.warn("Number of faces and icons differ. Animation aborted.");
+        return;
+    }
+
+    // For convenience, let’s define a helper to get a random index
+    // different from the current one.
+    const total = faces.length;
+    function getRandomNextIndex(current: number): number {
+        let next = current;
+        while (next === current && total > 1) {
+            next = Math.floor(Math.random() * total);
         }
-
-    });
-
-    splide.on('updated', () => {
-        slider.querySelector<HTMLElement>('.splide__track')?.style.setProperty('overflow', 'visible');
-
-        slider.querySelector<HTMLElement>('.team_list')?.style.setProperty('display', window.innerWidth > 640 ? 'grid' : 'flex');
-    })
-
-    splide.on('mounted', () => {
-        slider.querySelector<HTMLElement>('.splide__track')?.style.setProperty('overflow', 'visible');
-
-        slider.querySelector<HTMLElement>('.team_list')?.style.setProperty('display', window.innerWidth > 640 ? 'grid' : 'flex');
-    });
-
-    splide.on('destroy', () => {
-        slider.querySelector<HTMLElement>('.team_list')?.style.setProperty('display', window.innerWidth > 640 ? 'grid' : 'flex');
-    });
-
-    splide.mount({ AutoScroll });
-}
-
-
-export function flashSVGs(containerSelector: string, duration: number = 1) {
-    const container = document.querySelector(containerSelector);
-    if (!container) {
-        console.error("Container not found");
-        return;
+        return next;
     }
 
-    const svgs = Array.from(container.querySelectorAll(".modal_grid-item"));
-    if (svgs.length === 0) {
-        console.error("No SVGs found in container");
-        return;
-    }
-
+    // Initialize the "current" index to 0 (we'll consider
+    // the first pair visible).  You could also randomize initial
+    // if you prefer.
     let currentIndex = 0;
 
-    // Hide all SVGs initially
-    gsap.set(svgs, { autoAlpha: 0 });
-    gsap.set(svgs[0], { autoAlpha: 1 });
+    // Set all faces/icons to y=+100% except the current pair (y=0).
+    faces.forEach((face, i) => {
+        gsap.set(face, { yPercent: i === currentIndex ? 0 : 100 });
+    });
+    icons.forEach((icon, i) => {
+        gsap.set(icon, { yPercent: i === currentIndex ? 0 : 100 });
+    });
 
-    function cycleSVGs() {
-        const nextIndex = (currentIndex + 1) % svgs.length;
+    /**
+     * The core function that transitions the current pair out
+     * and a new random pair in, then schedules itself again.
+     */
+    function doTransition() {
+        // Pick the next random index
+        const nextIndex = getRandomNextIndex(currentIndex);
 
-        gsap.to(svgs[currentIndex], { autoAlpha: 0, duration: 0.5, ease: "power2.out" });
-        gsap.to(svgs[nextIndex], { autoAlpha: 1, duration: 0.5, ease: "power2.in" });
+        // Place the new pair down at +100% to ensure
+        // they come up from below
+        gsap.set([faces[nextIndex], icons[nextIndex]], {
+            yPercent: 100,
+        });
 
-        currentIndex = nextIndex;
+        // Build a timeline for the animation
+        const tl = gsap.timeline({
+            onComplete: () => {
+                // Update the currentIndex and schedule the next transition
+                currentIndex = nextIndex;
+                gsap.delayedCall(delay, doTransition);
+            },
+        });
+
+        // Move the current pair up to -100% (out of view)
+        tl.to(
+            [faces[currentIndex], icons[currentIndex]],
+            {
+                yPercent: -100,
+                duration,
+                ease: "power2.inOut",
+            },
+            0
+        );
+
+        // Simultaneously move the new pair from +100% to 0%
+        tl.to(
+            [faces[nextIndex], icons[nextIndex]],
+            {
+                yPercent: 0,
+                duration,
+                ease: "power2.inOut",
+            },
+            0
+        );
     }
 
-    setInterval(cycleSVGs, duration * 1000);
+    // Start the infinite cycle
+    gsap.delayedCall(delay, doTransition);
 }
