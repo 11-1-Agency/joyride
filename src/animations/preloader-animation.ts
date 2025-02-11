@@ -62,11 +62,12 @@ export function pageTransition(lenis: Lenis) {
             '-=0.2',
         )
         // Reveal the navbar section
-        .from(
+        .to(
             '.navbar_section',
-            { yPercent: -100, duration: 0.8, ease: "power4.out" },
+            { yPercent: 0, duration: 0.8, ease: "power4.out" },
             '-=0.1',
         )
+        .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)" })
 
 
     timelineLeave
@@ -80,25 +81,26 @@ export function pageTransition(lenis: Lenis) {
             '-=0.5',
         )
 
-    console.log(timeline);
-
     barba.init({
         sync: true,
         transitions: [{
             name: 'default-transition',
-            async once() {
-                return timeline.play();
+            async once(data: any) {
+                if (data.next.namespace === "home") {
+                    await timeline.play();
+                } else {
+                    timelineEnter.play();
+                }
             },
             async leave() {
-                return timelineLeave.play();
-            },
-            async after() {
-                return timelineEnter.play();
+                await timelineLeave.play();
             },
             async enter(data: any) {
-                resetWebflow(data);
+                timelineEnter.play();
 
-                window.scrollTo(0, 0);
+                await resetWebflow(data);
+
+                // window.scrollTo(0, 0);
             }
         }]
     });
