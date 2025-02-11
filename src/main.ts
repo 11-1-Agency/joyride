@@ -14,7 +14,7 @@ import { smoothScroll } from "./animations/smooth-scroll-animation";
 // import { scrollytelling } from "./animations/scrollytelling-animation";
 
 import { JoyrideRiveAnimation } from "./animations/rive-animations";
-import { fadeInAnimation, animateFacesIcons, splideCarousel } from "./animations/micro-animations";
+import { fadeInAnimation, splideCarousel, shuffleAndAnimatePair } from "./animations/micro-animations";
 
 /**
  * Initialize the UI by adding event listeners and set up the initial state.
@@ -53,6 +53,4 @@ splideCarousel();
 // Fade in elements with a 'data-fade-in' attribute.
 fadeInAnimation();
 
-
-
-animateFacesIcons()
+shuffleAndAnimatePair()

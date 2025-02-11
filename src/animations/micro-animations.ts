@@ -52,109 +52,119 @@ export function fadeInAnimation() {
     });
 }
 
-export function animateFacesIcons(): void {
+export function shuffleAndAnimatePair() {
+    const wrappers = document.querySelectorAll<HTMLElement>(".face_wrap");
 
-    // Select each column and call the function:
-    const columns = document.querySelectorAll<HTMLElement>(".face_wrap");
+    wrappers.forEach((wrapper) => {
+        run(wrapper)
+    })
 
-    columns.forEach((col) => {
-        run(col);
-    });
+    function run(wrapper: HTMLElement) {
+        const duration = Number.parseFloat(wrapper.dataset.duration || '1.0');
+        const delayBetweenSlides = Number.parseFloat(wrapper.dataset.delay || '2.0');
+        const ease = "power2.inOut";
 
-    function run(column: HTMLElement) {
-        const duration = Number.parseFloat(column.dataset.duration || '1.0');
-        const delay = Number.parseFloat(column.dataset.delay || '2.0');
+        const faceList = wrapper.querySelector<HTMLElement>(".face_list");
+        const iconList = wrapper.querySelector<HTMLElement>(".face_icon-list");
 
-        // Grab the face and icon containers.
-        const faceContainer = column.querySelector(".face_container");
-        const iconContainer = column.querySelector(".face_icon-wrap");
-
-        if (!faceContainer || !iconContainer) {
-            console.warn("Column is missing .face_container or .face_icon-wrap.");
+        if (!faceList || !iconList) {
+            console.warn("Wrapper must contain both .face_list and .face_icon-list.");
             return;
         }
 
-        // Collect the faces and icons. Adjust selectors as needed:
-        const faces = Array.from(faceContainer.children) as HTMLElement[];
-        const icons = Array.from(iconContainer.children) as HTMLElement[];
+        // Get the items from each list
+        let faceItems = Array.from(faceList.children) as HTMLElement[];
+        let iconItems = Array.from(iconList.children) as HTMLElement[];
 
-        // Make sure the length matches so index i in faces = index i in icons.
-        if (faces.length !== icons.length) {
-            console.warn("Number of faces and icons differ. Animation aborted.");
+        // Make sure both have the same count
+        const itemCount = faceItems.length;
+        if (itemCount === 0 || iconItems.length !== itemCount) {
+            console.warn("face_list and face_icon-list must have the same number of items, and not be empty.");
             return;
         }
 
-        // For convenience, let’s define a helper to get a random index
-        // different from the current one.
-        const total = faces.length;
-        function getRandomNextIndex(current: number): number {
-            let next = current;
-            while (next === current && total > 1) {
-                next = Math.floor(Math.random() * total);
+        // STEP 1: Create a SINGLE shuffled array of indices [0..(n-1)]
+        // This ensures both lists will be reordered in the exact same sequence.
+        const indices = shuffleIndices(itemCount);
+        // e.g. [2, 0, 3, 1] if itemCount=4
+
+        // STEP 2: Reorder both faceList and iconList DOMs based on these indices
+        reorderListByIndices(faceList, faceItems, indices);
+        reorderListByIndices(iconList, iconItems, indices);
+
+        // Update references to items after reordering
+        faceItems = Array.from(faceList.children) as HTMLElement[];
+        iconItems = Array.from(iconList.children) as HTMLElement[];
+
+        // STEP 3: Duplicate the first item in each list and append at the end
+        const faceFirstClone = faceItems[0].cloneNode(true) as HTMLElement;
+        faceList.appendChild(faceFirstClone);
+
+        const iconFirstClone = iconItems[0].cloneNode(true) as HTMLElement;
+        iconList.appendChild(iconFirstClone);
+
+        // Re-get items after cloning
+        faceItems = Array.from(faceList.children) as HTMLElement[];
+        iconItems = Array.from(iconList.children) as HTMLElement[];
+
+        // totalItems = original count + 1 (because of the cloned item)
+        const totalItems = faceItems.length;
+
+        // STEP 4: Build a single GSAP timeline that animates BOTH lists in sync We'll move from item0 to item1, then item1 to item2, etc. Each step is a shift of -100% * (index + 1) in the y direction.
+
+        // We'll repeat infinitely; on repeat, GSAP will reset yPercent to 0 instantly
+        // which aligns with item0 being visually the same as the last cloned item.
+        const faceTimeline = gsap.timeline({ repeat: -1, delay: delayBetweenSlides });
+
+        // For each item in the list, shift it up by 100% * (index+1) / totalItems
+        // At the end, jump back to the top instantly (GSAP will reset yPercent to 0)
+        faceItems.forEach((_, i) => {
+            if (i < totalItems - 1) {
+                faceTimeline
+                    .to(
+                        [faceList, iconList],
+                        {
+                            yPercent: (-100 * (i + 1)) / totalItems,
+                            duration,
+                            ease,
+                            delay: delayBetweenSlides,
+                        },
+                    )
             }
-            return next;
-        }
-
-        // Initialize the "current" index to 0 (we'll consider
-        // the first pair visible).  You could also randomize initial
-        // if you prefer.
-        let currentIndex = 0;
-
-        // Set all faces/icons to y=+100% except the current pair (y=0).
-        faces.forEach((face, i) => {
-            gsap.set(face, { yPercent: i === currentIndex ? 0 : 100 });
         });
-        icons.forEach((icon, i) => {
-            gsap.set(icon, { yPercent: i === currentIndex ? 0 : 100 });
-        });
+    }
 
-        /**
-         * The core function that transitions the current pair out
-         * and a new random pair in, then schedules itself again.
-         */
-        function doTransition() {
-            // Pick the next random index
-            const nextIndex = getRandomNextIndex(currentIndex);
+    /* ============================================================================
+       Utility Functions
+       ============================================================================
+    */
 
-            // Place the new pair down at +100% to ensure
-            // they come up from below
-            gsap.set([faces[nextIndex], icons[nextIndex]], {
-                yPercent: 100,
-            });
-
-            // Build a timeline for the animation
-            const tl = gsap.timeline({
-                onComplete: () => {
-                    // Update the currentIndex and schedule the next transition
-                    currentIndex = nextIndex;
-                    gsap.delayedCall(delay, doTransition);
-                },
-            });
-
-            // Move the current pair up to -100% (out of view)
-            tl.to(
-                [faces[currentIndex], icons[currentIndex]],
-                {
-                    yPercent: -100,
-                    duration,
-                    ease: "power2.inOut",
-                },
-                0
-            );
-
-            // Simultaneously move the new pair from +100% to 0%
-            tl.to(
-                [faces[nextIndex], icons[nextIndex]],
-                {
-                    yPercent: 0,
-                    duration,
-                    ease: "power2.inOut",
-                },
-                0
-            );
+    /**
+     * Returns an array of shuffled indices [0..(n-1)] using Fisher-Yates.
+     */
+    function shuffleIndices(n: number): number[] {
+        const arr = Array.from({ length: n }, (_, i) => i);
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
+        return arr;
+    }
 
-        // Start the infinite cycle
-        gsap.delayedCall(delay, doTransition);
+    /**
+     * Reorders a list’s children based on the given indices array.
+     * e.g. if indices=[2,0,1], then list’s child(2) becomes new first, etc.
+     */
+    function reorderListByIndices(
+        list: HTMLElement,
+        items: HTMLElement[],
+        indices: number[]
+    ) {
+        const fragment = document.createDocumentFragment();
+
+        indices.forEach((idx) => {
+            fragment.appendChild(items[idx]);
+        });
+        list.appendChild(fragment);
     }
 }
