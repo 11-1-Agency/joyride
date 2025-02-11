@@ -52,100 +52,109 @@ export function fadeInAnimation() {
     });
 }
 
-export function animateFacesIcons(column: HTMLElement): void {
+export function animateFacesIcons(): void {
 
-    const duration = Number.parseFloat(column.dataset.duration || '1.0');
-    const delay = Number.parseFloat(column.dataset.delay || '2.0');
+    // Select each column and call the function:
+    const columns = document.querySelectorAll<HTMLElement>(".face_wrap");
 
-    // Grab the face and icon containers.
-    const faceContainer = column.querySelector(".face_container");
-    const iconContainer = column.querySelector(".face_icon-wrap");
+    columns.forEach((col) => {
+        run(col);
+    });
 
-    if (!faceContainer || !iconContainer) {
-        console.warn("Column is missing .face_container or .face_icon-wrap.");
-        return;
-    }
+    function run(column: HTMLElement) {
+        const duration = Number.parseFloat(column.dataset.duration || '1.0');
+        const delay = Number.parseFloat(column.dataset.delay || '2.0');
 
-    // Collect the faces and icons. Adjust selectors as needed:
-    const faces = Array.from(faceContainer.children) as HTMLElement[];
-    const icons = Array.from(iconContainer.children) as HTMLElement[];
+        // Grab the face and icon containers.
+        const faceContainer = column.querySelector(".face_container");
+        const iconContainer = column.querySelector(".face_icon-wrap");
 
-    // Make sure the length matches so index i in faces = index i in icons.
-    if (faces.length !== icons.length) {
-        console.warn("Number of faces and icons differ. Animation aborted.");
-        return;
-    }
-
-    // For convenience, let’s define a helper to get a random index
-    // different from the current one.
-    const total = faces.length;
-    function getRandomNextIndex(current: number): number {
-        let next = current;
-        while (next === current && total > 1) {
-            next = Math.floor(Math.random() * total);
+        if (!faceContainer || !iconContainer) {
+            console.warn("Column is missing .face_container or .face_icon-wrap.");
+            return;
         }
-        return next;
-    }
 
-    // Initialize the "current" index to 0 (we'll consider
-    // the first pair visible).  You could also randomize initial
-    // if you prefer.
-    let currentIndex = 0;
+        // Collect the faces and icons. Adjust selectors as needed:
+        const faces = Array.from(faceContainer.children) as HTMLElement[];
+        const icons = Array.from(iconContainer.children) as HTMLElement[];
 
-    // Set all faces/icons to y=+100% except the current pair (y=0).
-    faces.forEach((face, i) => {
-        gsap.set(face, { yPercent: i === currentIndex ? 0 : 100 });
-    });
-    icons.forEach((icon, i) => {
-        gsap.set(icon, { yPercent: i === currentIndex ? 0 : 100 });
-    });
+        // Make sure the length matches so index i in faces = index i in icons.
+        if (faces.length !== icons.length) {
+            console.warn("Number of faces and icons differ. Animation aborted.");
+            return;
+        }
 
-    /**
-     * The core function that transitions the current pair out
-     * and a new random pair in, then schedules itself again.
-     */
-    function doTransition() {
-        // Pick the next random index
-        const nextIndex = getRandomNextIndex(currentIndex);
+        // For convenience, let’s define a helper to get a random index
+        // different from the current one.
+        const total = faces.length;
+        function getRandomNextIndex(current: number): number {
+            let next = current;
+            while (next === current && total > 1) {
+                next = Math.floor(Math.random() * total);
+            }
+            return next;
+        }
 
-        // Place the new pair down at +100% to ensure
-        // they come up from below
-        gsap.set([faces[nextIndex], icons[nextIndex]], {
-            yPercent: 100,
+        // Initialize the "current" index to 0 (we'll consider
+        // the first pair visible).  You could also randomize initial
+        // if you prefer.
+        let currentIndex = 0;
+
+        // Set all faces/icons to y=+100% except the current pair (y=0).
+        faces.forEach((face, i) => {
+            gsap.set(face, { yPercent: i === currentIndex ? 0 : 100 });
+        });
+        icons.forEach((icon, i) => {
+            gsap.set(icon, { yPercent: i === currentIndex ? 0 : 100 });
         });
 
-        // Build a timeline for the animation
-        const tl = gsap.timeline({
-            onComplete: () => {
-                // Update the currentIndex and schedule the next transition
-                currentIndex = nextIndex;
-                gsap.delayedCall(delay, doTransition);
-            },
-        });
+        /**
+         * The core function that transitions the current pair out
+         * and a new random pair in, then schedules itself again.
+         */
+        function doTransition() {
+            // Pick the next random index
+            const nextIndex = getRandomNextIndex(currentIndex);
 
-        // Move the current pair up to -100% (out of view)
-        tl.to(
-            [faces[currentIndex], icons[currentIndex]],
-            {
-                yPercent: -100,
-                duration,
-                ease: "power2.inOut",
-            },
-            0
-        );
+            // Place the new pair down at +100% to ensure
+            // they come up from below
+            gsap.set([faces[nextIndex], icons[nextIndex]], {
+                yPercent: 100,
+            });
 
-        // Simultaneously move the new pair from +100% to 0%
-        tl.to(
-            [faces[nextIndex], icons[nextIndex]],
-            {
-                yPercent: 0,
-                duration,
-                ease: "power2.inOut",
-            },
-            0
-        );
+            // Build a timeline for the animation
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    // Update the currentIndex and schedule the next transition
+                    currentIndex = nextIndex;
+                    gsap.delayedCall(delay, doTransition);
+                },
+            });
+
+            // Move the current pair up to -100% (out of view)
+            tl.to(
+                [faces[currentIndex], icons[currentIndex]],
+                {
+                    yPercent: -100,
+                    duration,
+                    ease: "power2.inOut",
+                },
+                0
+            );
+
+            // Simultaneously move the new pair from +100% to 0%
+            tl.to(
+                [faces[nextIndex], icons[nextIndex]],
+                {
+                    yPercent: 0,
+                    duration,
+                    ease: "power2.inOut",
+                },
+                0
+            );
+        }
+
+        // Start the infinite cycle
+        gsap.delayedCall(delay, doTransition);
     }
-
-    // Start the infinite cycle
-    gsap.delayedCall(delay, doTransition);
 }
