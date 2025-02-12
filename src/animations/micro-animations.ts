@@ -31,7 +31,7 @@ export function splideCarousel() {
  */
 export function fadeInAnimation() {
     // Select all elements with the 'data-fade-in="true"' attribute
-    const elements = gsap.utils.toArray<HTMLElement>('[data-fade-in="true"]');
+    const elements = gsap.utils.toArray<HTMLElement>('[data-fade-in="stagger"]');
 
     // Set initial opacity and vertical position for the elements
     gsap.set(elements, { opacity: 0, y: '2rem' });
@@ -49,6 +49,28 @@ export function fadeInAnimation() {
                 ease: "back.out(3)" // Easing function for the animation
             }
         ),
+    });
+}
+
+export function singleFadeIn() {
+    const elements = gsap.utils.toArray<HTMLElement>('[data-fade-in="true"]');
+
+    gsap.set(elements, { opacity: 0, y: '2rem' });
+
+    elements.forEach((element) => {
+        gsap.to(
+            element,
+            {
+                opacity: 1,
+                y: '0rem',
+                duration: 1.5,
+                ease: "back.out(3)",
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 80%",
+                }
+            }
+        );
     });
 }
 
@@ -167,4 +189,31 @@ export function shuffleAndAnimatePair() {
         });
         list.appendChild(fragment);
     }
+}
+
+export function rotateArrow() {
+    const scroller = document.querySelector<HTMLElement>("#scroller");
+
+    if (!scroller) return;
+
+
+    const heroSection = document.querySelector<HTMLElement>(".hero_section");
+
+    if (!heroSection) return;
+
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: heroSection,
+            start: "bottom top",
+            toggleActions: "play none none reverse",
+        },
+    });
+
+    tl
+        .set(scroller, { zIndex: 99 })
+        .fromTo(
+            scroller.querySelector<HTMLElement>(".scroller_icon"),
+            { transform: "rotate(-90deg)" },
+            { transform: "rotate(-270deg)", ease: "power4.inOut" }
+        );
 }

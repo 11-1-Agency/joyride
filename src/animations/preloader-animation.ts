@@ -10,6 +10,14 @@ import barba from '@barba/core';
  * Animation for the preloader
  */
 
+/**
+ * Resets the Webflow page id and reinitializes the Webflow runtime.
+ * This is necessary because the page transition does not update the
+ * Webflow page id and the Webflow runtime is not reinitialized.
+ * @param {any} data - The data object passed to the page transition.
+ * @returns {Promise<void>} - A promise that resolves when the Webflow
+ * runtime is reinitialized.
+ */
 function resetWebflow(data: any) {
     let parser = new DOMParser();
     let dom = parser.parseFromString(data.next.html, "text/html");
@@ -85,6 +93,7 @@ export function pageTransition(lenis: Lenis) {
         sync: true,
         transitions: [{
             name: 'default-transition',
+            sync: true,
             async once(data: any) {
                 if (data.next.namespace === "home") {
                     await timeline.play();
@@ -98,10 +107,23 @@ export function pageTransition(lenis: Lenis) {
             async enter(data: any) {
                 timelineEnter.play();
 
+                
                 await resetWebflow(data);
 
-                // window.scrollTo(0, 0);
-            }
+                const url = new URL(window.location.href);
+                const id = url.hash.slice(1);
+                if (id) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        window.scrollTo({
+                            top: element.offsetTop,
+                            behavior: 'smooth',
+                        });
+                    }
+                } else {
+                    window.scrollTo(0, 0);
+                }
+            },
         }]
     });
 }

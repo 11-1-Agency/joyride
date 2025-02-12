@@ -3,35 +3,23 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function scrollytelling() {
     const heroAnimation = gsap.timeline({});
-    const uspsAnimation = gsap.timeline({});
-    const brandsAnimation = gsap.timeline({});
+    // const uspsAnimation = gsap.timeline({});
+    // const brandsAnimation = gsap.timeline({});
     const closeAnimation = gsap.timeline({});
     // const projectsAnimation = gsap.timeline({});
 
 
+    openTransition(heroAnimation);
+    closeTransition(closeAnimation);
+
     if (window.innerWidth > 992) {
-        heroTransition(heroAnimation);
-        uspsTransition(uspsAnimation);
-        brandsTransition(brandsAnimation);
-        closeTransition(closeAnimation);
+        // brandsTransition(brandsAnimation);
+        // uspsTransition(uspsAnimation);
         // projectTransition(projectsAnimation);
     }
-
-    // window.addEventListener("resize", () => {
-    //     if (window.innerWidth > 1024) {
-    //         heroAnimation.kill();
-    //         uspsAnimation.clear();
-    //         brandsAnimation.clear();
-    //         closeAnimation.clear();
-    //     } else {
-    //         heroAnimation.kill();
-    //         uspsAnimation.clear();
-    //         brandsAnimation.clear();
-    //         closeAnimation.clear();
-    //     }
-    // });
 }
 
+// @ts-ignore
 function heroTransition(timeline: gsap.core.Timeline) {
     // get the section
     const section = document.querySelector<HTMLElement>(".hero_section");
@@ -76,24 +64,25 @@ function heroTransition(timeline: gsap.core.Timeline) {
     });
 }
 
+// @ts-ignore
 function uspsTransition(timeline: gsap.core.Timeline) {
     // get the section
     const section = document.querySelector<HTMLElement>(".usp_section");
 
     if (!section) return;
-    
-    
+
+
     // create a wrapper for the section
     const wrapper = document.createElement("div");
     section.parentNode?.insertBefore(wrapper, section);
     wrapper.appendChild(section);
-    
+
     // set the styles for the section and the wrapper
     gsap.set(wrapper, { height: "800vh", position: "relative" });
-    
+
     // add the animations to the timeline
     const properties = dotScale();
-    
+
     if (!properties) return;
 
     const container = document
@@ -183,6 +172,7 @@ function uspsTransition(timeline: gsap.core.Timeline) {
     });
 }
 
+// @ts-ignore
 function brandsTransition(timeline: gsap.core.Timeline) {
     // get the section
     const section = document.querySelector<HTMLElement>(".brands_section");
@@ -223,13 +213,13 @@ function brandsTransition(timeline: gsap.core.Timeline) {
         )
         .fromTo(
             section.querySelector('.features_heading .line-01'),
-            {  xPercent: -30  },
+            { xPercent: -30 },
             { xPercent: 0 },
             '-=0.3'
         )
         .fromTo(
             section.querySelector('.features_heading .line-02'),
-            { xPercent: -70  },
+            { xPercent: -70 },
             { xPercent: 0 },
             '<'
         )
@@ -268,9 +258,52 @@ function brandsTransition(timeline: gsap.core.Timeline) {
         )
 }
 
-function closeTransition(timeline: gsap.core.Timeline) {
+function openTransition(timeline: gsap.core.Timeline) {
     // get the section
-    const section = document.querySelector<HTMLElement>(".closing_section");
+    const section = document.querySelector<HTMLElement>('[data-transition="opening"]');
+
+    if (!section) return;
+
+    // create a wrapper for the section
+    const wrapper = document.createElement("div");
+    section.parentNode?.insertBefore(wrapper, section);
+    wrapper.appendChild(section);
+
+    // set the styles for the section and the wrapper
+    gsap.set(wrapper, { height: "100vh", position: "relative" });
+    gsap.set(section, { position: "sticky", top: 0 });
+
+    // initiate the timeline
+    const path = {
+        element: section.querySelector("#hero-transition-path"),
+        start: "M0 99.9998V99.9766C25 99.9767 75 99.9646 100 99.9648V99.9998",
+        end: "M0 100V70C25 51 75 51 100 70V100",
+    };
+
+    // add the animations to the timeline
+    timeline
+        .set(section.querySelector("svg"), { height: "100%", width: "100%" })
+        .fromTo(
+            path.element,
+            { attr: { d: path.start } },
+            { attr: { d: path.end } }
+        )
+
+    // set the scroll trigger
+    ScrollTrigger.create({
+        animation: timeline,
+        trigger: wrapper,
+        start: "top top",
+        end: "bottom center",
+        scrub: true,
+    });
+}
+
+function closeTransition(timeline: gsap.core.Timeline) {
+    const selector = '[data-transition="closing"]';
+
+    // get the section
+    const section = document.querySelector<HTMLElement>(selector);
 
     if (!section) return;
 
@@ -284,7 +317,7 @@ function closeTransition(timeline: gsap.core.Timeline) {
     gsap.set(section, { position: "sticky", top: 0 });
 
     const path = {
-        element: document.getElementById("closing-transition-path"),
+        element: section.querySelector("#closing-transition-path"),
         start:
             "M100 0L100 100C66.6667 100 33.3333 100 0 100L8.74228e-06 -8.74228e-06L100 0Z",
         // start: 'M5.39545e-05 75L0 0H100L100 75C100 75 91.5 100 50 100C8.49999 100 5.39545e-05 75 5.39545e-05 75Z',
@@ -293,7 +326,8 @@ function closeTransition(timeline: gsap.core.Timeline) {
 
     // add the animations to the timeline
     timeline
-        .set(".closing_section", { backgroundColor: "var(--surface--pink)" })
+        .set(section.querySelector("svg"), { height: "100%", width: "100%" })
+        .set(section, { backgroundColor: section.dataset.properties ?? "var(--surface--pink)" })
         // Transitions
         .fromTo(
             path.element,
