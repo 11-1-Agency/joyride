@@ -3,7 +3,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function scrollytelling() {
     const heroAnimation = gsap.timeline({});
-    // const uspsAnimation = gsap.timeline({});
+    const uspsAnimation = gsap.timeline({});
     const brandsAnimation = gsap.timeline({});
     const closeAnimation = gsap.timeline({});
     // const projectsAnimation = gsap.timeline({});
@@ -12,9 +12,9 @@ export function scrollytelling() {
     openTransition(heroAnimation);
     closeTransition(closeAnimation);
     brandsTransition(brandsAnimation);
+    uspsTransition(uspsAnimation);
 
     if (window.innerWidth > 992) {
-        // uspsTransition(uspsAnimation);
         // projectTransition(projectsAnimation);
     }
 }
@@ -64,13 +64,11 @@ function heroTransition(timeline: gsap.core.Timeline) {
     });
 }
 
-// @ts-ignore
 function uspsTransition(timeline: gsap.core.Timeline) {
     // get the section
     const section = document.querySelector<HTMLElement>(".usp_section");
 
     if (!section) return;
-
 
     // create a wrapper for the section
     const wrapper = document.createElement("div");
@@ -79,60 +77,50 @@ function uspsTransition(timeline: gsap.core.Timeline) {
 
     // set the styles for the section and the wrapper
     gsap.set(wrapper, { height: "800vh", position: "relative" });
+    gsap.set(section, { position: "sticky", top: 0 });
 
     // add the animations to the timeline
     const properties = dotScale();
 
     if (!properties) return;
 
-    const container = document
-        .querySelector<HTMLElement>(".usp_section")
-        ?.getBoundingClientRect();
-    const icon = document
-        .querySelector<HTMLElement>(".usp_bottom-icon")
-        ?.getBoundingClientRect();
-
-    // const path = {
-    //     element: document.getElementById('usp-transition-path'),
-    //     start: 'M50.0005 99.9883C50.0005 99.9925 72.3914 99.9958 100 99.9958V100H0V99.9959C27.5311 99.9958 50.0005 99.9924 50.0005 99.9883Z',
-    //     end: 'M50.001 -0.000840373C50.001 27.6819 72.3921 43.4215 100.001 43.4215V100H4.21733e-06V43.5039C27.5314 43.402 50.001 27.6096 50.001 -0.000840373Z',
-    // }
+    const container = document.querySelector<HTMLElement>(".usp_section")?.getBoundingClientRect();
+    const icon = document.querySelector<HTMLElement>(".usp_bottom-icon")?.getBoundingClientRect();
 
     const path = {
         element: document.getElementById("usp-transition-path"),
-        start:
-            "M50.0002 99.8877C50.0002 99.9868 51.0446 100 51.4314 100L48.6383 100C49.2054 100 50.0002 99.9729 50.0002 99.8877Z",
+        start: "M50.0002 99.8877C50.0002 99.9868 51.0446 100 51.4314 100L48.6383 100C49.2054 100 50.0002 99.9729 50.0002 99.8877Z",
         mid: "M50.0002 0.0670931C50.0002 27.7499 72.3913 100 100 100L0.188965 99.9996C27.7204 99.8976 50.0002 27.6776 50.0002 0.0670931Z",
         end: "M49.9997 0.0668945C49.9997 27.7497 99.9997 0.0668945 99.9997 99.9998L0.188477 99.9994C0.188477 0.067337 49.9997 27.6774 49.9997 0.0668945Z",
     };
 
     // add the animations to the timeline
     timeline
-        .set(section, { position: "sticky", top: 0 })
-        .set(".usp_heading", {
-            transformOrigin: properties.transformOrigin,
-            position: "relative",
-        })
-        .fromTo(
-            ".usp_heading",
-            {
-                transform: `translate(${properties.x}%, ${properties.y}%) scale(${properties.scale}, ${properties.scale})`,
-            },
-            { transform: `translate(0%, 0%) scale(1, 1)`, duration: 3 }
-        )
-        .from(
-            ".usp_heading-fade",
-            { opacity: 0 }
-        )
-        .from(
-            ".usp_header .usp_paragraph",
-            { opacity: 0, y: "2rem" }
-        )
-        .addLabel("icon-01")
-        .from(
-            ".usp_bottom",
-            { opacity: 0, y: "2rem" }, "-=0.4"
-        )
+        // .set(section, { position: "sticky", top: 0 })
+        // .set(".usp_heading", {
+        //     transformOrigin: properties.transformOrigin,
+        //     position: "relative",
+        // })
+        // .fromTo(
+        //     ".usp_heading",
+        //     {
+        //         transform: `translate(${properties.x}%, ${properties.y}%) scale(${properties.scale}, ${properties.scale})`,
+        //     },
+        //     { transform: `translate(0%, 0%) scale(1, 1)`, duration: 3 }
+        // )
+        // .from(
+        //     ".usp_heading-fade",
+        //     { opacity: 0 }
+        // )
+        // .from(
+        //     ".usp_header .usp_paragraph",
+        //     { opacity: 0, y: "2rem" }
+        // )
+        // .addLabel("icon-01")
+        // .from(
+        //     ".usp_bottom",
+        //     { opacity: 0, y: "2rem" }, "-=0.4"
+        // )
         .addLabel("icon-02")
         .to(
             ".usp_bottom > div > div",
@@ -160,8 +148,8 @@ function uspsTransition(timeline: gsap.core.Timeline) {
     ScrollTrigger.create({
         animation: timeline,
         trigger: wrapper,
-        start: "top center",
-        end: "bottom center",
+        start: "top top",
+        end: "bottom top",
         scrub: true,
         snap: {
             snapTo: "labels",

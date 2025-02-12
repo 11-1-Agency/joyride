@@ -149,10 +149,28 @@ export function shuffleAndAnimatePair() {
         // which aligns with item0 being visually the same as the last cloned item.
         const faceTimeline = gsap.timeline({ repeat: -1, delay: delayBetweenSlides });
 
-        // For each item in the list, shift it up by 100% * (index+1) / totalItems
-        // At the end, jump back to the top instantly (GSAP will reset yPercent to 0)
+        // Inside the run() function, after verifying faceList and iconList exist:
+
+        // Select the .face_container element inside the wrapper
+        const faceContainer = wrapper.querySelector<HTMLElement>(".face_container");
+        if (!faceContainer) {
+            console.warn("Wrapper must contain a .face_container element.");
+            return;
+        }
+
+        // Define your list of five colors
+        const colors = ["#ff98d0", "#5cca1c", "#fedf45", "#3fa9f5"];
+
+        // Set the initial background color to the first color in the list
+        gsap.set(faceContainer, { backgroundColor: colors[Math.floor(Math.random()*colors.length)] });
+
+        // For each step in the animation, update the position of the lists
+        // and concurrently animate the background color of faceContainer.
         faceItems.forEach((_, i) => {
             if (i < totalItems - 1) {
+                // Cycle through the color list using modulo
+                const newColor = colors[Math.floor(Math.random()*colors.length)]
+
                 faceTimeline
                     .to(
                         [faceList, iconList],
@@ -161,8 +179,18 @@ export function shuffleAndAnimatePair() {
                             duration,
                             ease,
                             delay: delayBetweenSlides,
-                        },
+                        }
                     )
+                    // Animate the background color concurrently ("<" means start at the same time)
+                    .to(
+                        faceContainer,
+                        {
+                            backgroundColor: newColor,
+                            duration,
+                            ease,
+                        },
+                        "<"
+                    );
             }
         });
     }
