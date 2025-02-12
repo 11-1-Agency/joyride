@@ -11,10 +11,13 @@ export function splideCarousel() {
     const carousel = document.querySelectorAll<HTMLElement>(".splide");
 
     carousel.forEach((slider) => {
+        const speed = Number.parseFloat(slider.dataset.speed || '1.2');
+
         var splide = new Splide(slider, {
             type: 'loop',
             drag: 'free',
-            speed: Number.parseFloat(slider.dataset.speed || '1.2'),
+            direction: speed > 0 ? 'ltr' : 'rtl',
+            speed: speed,
             fixedWidth: slider.dataset.width || 'n/a',
             arrows: false,
             pagination: false,
@@ -32,6 +35,10 @@ export function splideCarousel() {
 export function fadeInAnimation() {
     // Select all elements with the 'data-fade-in="true"' attribute
     const elements = gsap.utils.toArray<HTMLElement>('[data-fade-in="stagger"]');
+
+    if (!elements.length) {
+        return;
+    }
 
     // Set initial opacity and vertical position for the elements
     gsap.set(elements, { opacity: 0, y: '2rem' });
@@ -54,6 +61,10 @@ export function fadeInAnimation() {
 
 export function singleFadeIn() {
     const elements = gsap.utils.toArray<HTMLElement>('[data-fade-in="true"]');
+
+    if (!elements.length) {
+        return;
+    }
 
     gsap.set(elements, { opacity: 0, y: '2rem' });
 
@@ -216,4 +227,21 @@ export function rotateArrow() {
             { transform: "rotate(-90deg)" },
             { transform: "rotate(-270deg)", ease: "power4.inOut" }
         );
+}
+
+export function landingAnimation() {
+    const timeline = gsap.timeline({});
+
+    timeline
+        .fromTo(
+            '[data-intro="true"]',
+            { y: '10rem', opacity: 0 },
+            { y: 0, opacity: 1, duration: 1.5, ease: "power4.out" },
+        )
+        .fromTo(
+            '.navbar_section',
+            { yPercent: -100 },
+            { yPercent: 0, duration: 0.8, ease: "power4.out" },
+            '-=0.8'
+        )
 }

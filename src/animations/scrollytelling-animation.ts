@@ -4,16 +4,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 export function scrollytelling() {
     const heroAnimation = gsap.timeline({});
     // const uspsAnimation = gsap.timeline({});
-    // const brandsAnimation = gsap.timeline({});
+    const brandsAnimation = gsap.timeline({});
     const closeAnimation = gsap.timeline({});
     // const projectsAnimation = gsap.timeline({});
 
 
     openTransition(heroAnimation);
     closeTransition(closeAnimation);
+    brandsTransition(brandsAnimation);
 
     if (window.innerWidth > 992) {
-        // brandsTransition(brandsAnimation);
         // uspsTransition(uspsAnimation);
         // projectTransition(projectsAnimation);
     }
@@ -178,7 +178,7 @@ function brandsTransition(timeline: gsap.core.Timeline) {
     const section = document.querySelector<HTMLElement>(".brands_section");
     const icon = section?.querySelector<HTMLElement>(".rive_frame");
 
-    if (!section) return;
+    if (!section || !icon) return;
 
     // create a wrapper for the section
     const wrapper = document.createElement("div");
@@ -186,76 +186,29 @@ function brandsTransition(timeline: gsap.core.Timeline) {
     wrapper.appendChild(section);
 
     // set the styles for the section and the wrapper
-    gsap.set(wrapper, { height: "500vh", position: "relative", zIndex: 2 });
+    gsap.set(wrapper, { height: "100vh", position: "relative", zIndex: 2 });
     gsap.set(section, { position: "sticky", top: 0 });
 
-    const brandsList = document.querySelector<HTMLElement>(".brands_list");
-
-    const offset = window.innerWidth * 0.5 + (brandsList?.offsetWidth ?? 0) * 0.5;
+    const offset = window.innerWidth + (icon?.offsetWidth ?? 0);
 
     // add the animations to the timeline
     timeline
         .fromTo(
-            brandsList,
-            { x: offset * -1 - (icon?.offsetWidth ?? 0) },
-            { x: offset + (icon?.offsetWidth ?? 0) }
+            icon,
+            { x: -1 * (icon.offsetWidth ?? 0) },
+            { x: offset }
         )
-        .fromTo(
-            ".brands-transition-shape",
-            { transform: "translate(-100%)" },
-            { transform: "translate(0%)" },
-            "-=0.33"
-        )
-        .set(
-            section.querySelectorAll(".features_heading span"),
-            { width: 'fit-content', margin: '0px auto', display: 'inline-block' },
-            '<'
-        )
-        .fromTo(
-            section.querySelector('.features_heading .line-01'),
-            { xPercent: -30 },
-            { xPercent: 0 },
-            '-=0.3'
-        )
-        .fromTo(
-            section.querySelector('.features_heading .line-02'),
-            { xPercent: -70 },
-            { xPercent: 0 },
-            '<'
-        )
-        .set(wrapper, { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" });
 
     // set the scroll trigger
     ScrollTrigger.create({
         animation: timeline,
         trigger: wrapper,
-        start: "top top",
+        start: "bottom bottom",
         end: "bottom top",
         scrub: true,
-        pin: section,
+        // pin: section,
         pinSpacing: false,
     });
-
-    const secondTimeline = gsap.timeline({
-        scrollTrigger: {
-            trigger: wrapper,
-            start: "top center",
-            end: "top top",
-            scrub: true,
-        }
-    })
-
-    secondTimeline
-        .fromTo(
-            '.brands_header',
-            { opacity: 0, y: '2rem' },
-            { opacity: 1, y: '0rem' },
-        )
-        .fromTo(
-            '.brands_buttons',
-            { opacity: 0, y: '2rem' },
-            { opacity: 1, y: '0rem' },
-        )
 }
 
 function openTransition(timeline: gsap.core.Timeline) {
@@ -276,13 +229,12 @@ function openTransition(timeline: gsap.core.Timeline) {
     // initiate the timeline
     const path = {
         element: section.querySelector("#hero-transition-path"),
-        start: "M0 99.9998V99.9766C25 99.9767 75 99.9646 100 99.9648V99.9998",
-        end: "M0 100V70C25 51 75 51 100 70V100",
+        start: "M100 0C60.9476 0 39.0524 0 7.54198e-06 0L0 100C0 100 17.5001 100 50.0001 100C82.5 100 100 100 100 100V0Z",
+        end: "M100 0C60.9476 0 39.0524 0 7.54198e-06 0L0 99.0001C0 99.0001 17.5001 74.0001 50.0001 74.0001C82.5 74.0001 100 99.0001 100 99.0001V0Z",
     };
 
     // add the animations to the timeline
     timeline
-        .set(section.querySelector("svg"), { height: "100%", width: "100%" })
         .fromTo(
             path.element,
             { attr: { d: path.start } },
@@ -294,7 +246,7 @@ function openTransition(timeline: gsap.core.Timeline) {
         animation: timeline,
         trigger: wrapper,
         start: "top top",
-        end: "bottom center",
+        end: "bottom top",
         scrub: true,
     });
 }
@@ -326,8 +278,7 @@ function closeTransition(timeline: gsap.core.Timeline) {
 
     // add the animations to the timeline
     timeline
-        .set(section.querySelector("svg"), { height: "100%", width: "100%" })
-        .set(section, { backgroundColor: section.dataset.properties ?? "var(--surface--pink)" })
+        // .set(section, { backgroundColor: section.dataset.properties ?? "var(--surface--pink)" })
         // Transitions
         .fromTo(
             path.element,
