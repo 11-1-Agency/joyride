@@ -217,15 +217,6 @@ function openTransition(timeline: gsap.core.Timeline) {
 
     if (!section) return;
 
-    // create a wrapper for the section
-    const wrapper = document.createElement("div");
-    section.parentNode?.insertBefore(wrapper, section);
-    wrapper.appendChild(section);
-
-    // set the styles for the section and the wrapper
-    gsap.set(wrapper, { height: "100vh", position: "relative" });
-    gsap.set(section, { position: "sticky", top: 0 });
-
     // initiate the timeline
     const path = {
         element: section.querySelector("#hero-transition-path"),
@@ -244,12 +235,12 @@ function openTransition(timeline: gsap.core.Timeline) {
     // set the scroll trigger
     ScrollTrigger.create({
         animation: timeline,
-        trigger: wrapper,
+        trigger: section,
         start: "top top",
         end: "bottom top",
         scrub: true,
     });
-}
+} 
 
 function closeTransition(timeline: gsap.core.Timeline) {
     const selector = '[data-transition="closing"]';
@@ -258,15 +249,6 @@ function closeTransition(timeline: gsap.core.Timeline) {
     const section = document.querySelector<HTMLElement>(selector);
 
     if (!section) return;
-
-    // create a wrapper for the section
-    const wrapper = document.createElement("div");
-    section.parentNode?.insertBefore(wrapper, section);
-    wrapper.appendChild(section);
-
-    // set the styles for the section and the wrapper
-    gsap.set(wrapper, { height: "100vh", position: "relative" });
-    gsap.set(section, { position: "sticky", top: 0 });
 
     const path = {
         element: section.querySelector("#closing-transition-path"),
@@ -289,7 +271,7 @@ function closeTransition(timeline: gsap.core.Timeline) {
     // set the scroll trigger
     ScrollTrigger.create({
         animation: timeline,
-        trigger: wrapper,
+        trigger: section,
         start: "top top",
         end: "bottom top",
         scrub: true,
