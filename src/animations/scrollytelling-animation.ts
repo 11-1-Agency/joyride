@@ -76,7 +76,7 @@ function uspsTransition(timeline: gsap.core.Timeline) {
     wrapper.appendChild(section);
 
     // set the styles for the section and the wrapper
-    gsap.set(wrapper, { height: "800vh", position: "relative" });
+    gsap.set(wrapper, { height: "300vh", position: "relative" });
     gsap.set(section, { position: "sticky", top: 0 });
 
     // add the animations to the timeline
