@@ -11,10 +11,10 @@ import "./style.css";
 import { modalAnimation } from "./animations/modal-animation";
 
 import { smoothScroll } from "./animations/smooth-scroll-animation";
-import { scrollytelling } from "./animations/scrollytelling-animation";
+import { transitions } from "./animations/transitions";
 
 import { JoyrideRiveAnimation } from "./animations/rive-animations";
-import { fadeInAnimation, splideCarousel, shuffleAndAnimatePair, singleFadeIn, rotateArrow, landingAnimation } from "./animations/micro-animations";
+import { splideCarousel, shuffleAndAnimatePair, carHanger} from "./animations/micro-animations";
 
 /**
  * Initialize the UI by adding event listeners and set up the initial state.
@@ -38,22 +38,16 @@ new JoyrideRiveAnimation('canvas.rive_canvas').init();
 // Set up the smooth scroll animation.
 smoothScroll(lenis);
 
-// Start the preloader animation.
-// pageTransition(lenis);
-landingAnimation();
-
-// Start the scrollytelling animation.
-scrollytelling();
-
 // Initialize the modal animation for each modal.
 modalAnimation(lenis);
 
 // Create an infinite marquee animation for the testimonial cards.
 splideCarousel();
 
-// Fade in elements with a 'data-fade-in' attribute.
-fadeInAnimation();
-singleFadeIn();
-rotateArrow();
+// Call the shuffleAndAnimatePair function to animate the face pairs.
+shuffleAndAnimatePair();
 
-shuffleAndAnimatePair()
+transitions();
+
+
+carHanger()

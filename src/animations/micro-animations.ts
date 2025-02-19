@@ -162,14 +162,14 @@ export function shuffleAndAnimatePair() {
         const colors = ["#ff98d0", "#5cca1c", "#fedf45", "#3fa9f5"];
 
         // Set the initial background color to the first color in the list
-        gsap.set(faceContainer, { backgroundColor: colors[Math.floor(Math.random()*colors.length)] });
+        gsap.set(faceContainer, { backgroundColor: colors[Math.floor(Math.random() * colors.length)] });
 
         // For each step in the animation, update the position of the lists
         // and concurrently animate the background color of faceContainer.
         faceItems.forEach((_, i) => {
             if (i < totalItems - 1) {
                 // Cycle through the color list using modulo
-                const newColor = colors[Math.floor(Math.random()*colors.length)]
+                const newColor = colors[Math.floor(Math.random() * colors.length)]
 
                 faceTimeline
                     .to(
@@ -230,32 +230,6 @@ export function shuffleAndAnimatePair() {
     }
 }
 
-export function rotateArrow() {
-    const scroller = document.querySelector<HTMLElement>("#scroller");
-
-    if (!scroller) return;
-
-
-    const heroSection = document.querySelector<HTMLElement>(".hero_section");
-
-    if (!heroSection) return;
-
-    const tl = gsap.timeline({
-        scrollTrigger: {
-            trigger: heroSection,
-            start: "bottom top",
-            toggleActions: "play none none reverse",
-        },
-    });
-
-    tl
-        .set(scroller, { zIndex: 99 })
-        .fromTo(
-            scroller.querySelector<HTMLElement>(".scroller_icon"),
-            { transform: "rotate(-90deg)" },
-            { transform: "rotate(-270deg)", ease: "power4.inOut" }
-        );
-}
 
 export function landingAnimation() {
     const timeline = gsap.timeline({});
@@ -272,4 +246,51 @@ export function landingAnimation() {
             { yPercent: 0, duration: 0.8, ease: "power4.out" },
             '-=0.8'
         )
+}
+
+export function carHanger() {
+    const icon = document.querySelector<HTMLElement>('.floating_price')
+
+    if (!icon) return;
+
+    const config = {
+        swingDuration: 3,
+        swingAngle: 15,
+        easing: "sine.inOut",
+        width: 60,
+        height: 72,
+    }
+
+    const timeline = gsap.timeline({
+        repeat: -1,
+        defaults: { ease: config.easing }
+    });
+
+    // Set transform origin
+    gsap.set(icon, {
+        transformOrigin: "50% 0%"
+    });
+
+    // Add animations
+    timeline
+        .fromTo(
+            icon,
+            { rotation: config.swingAngle },
+            { rotation: -config.swingAngle, duration: config.swingDuration }
+        )
+        .fromTo(
+            icon,
+            { rotation: -config.swingAngle },
+            { rotation: config.swingAngle, duration: config.swingDuration },
+        )
+        // .to(
+        //     icon,
+        // )
+        // .to(
+        //     icon,
+        //     { rotation: 0, duration: config.swingDuration / 2 }
+        // );
+
+    // Start from middle for smooth initial animation
+    // timeline.seek(0.5);
 }
