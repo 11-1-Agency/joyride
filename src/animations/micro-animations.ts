@@ -1,11 +1,15 @@
 import { gsap } from 'gsap';
+import { CustomEase } from "gsap/CustomEase";
 
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 import Splide from '@splidejs/splide';
 import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
 // @ts-ignore
 import '@splidejs/splide/css/core';
+
+gsap.registerPlugin(MotionPathPlugin);
 
 export function splideCarousel() {
     const carousel = document.querySelectorAll<HTMLElement>(".splide");
@@ -27,11 +31,6 @@ export function splideCarousel() {
     })
 }
 
-/**
- * Fade-in animation for elements with a specific attribute.
- * This function targets elements with the attribute `data-fade-in="true"`
- * and applies a fade-in animation when the element enters the viewport.
- */
 export function fadeInAnimation() {
     // Select all elements with the 'data-fade-in="true"' attribute
     const elements = gsap.utils.toArray<HTMLElement>('[data-fade-in="stagger"]');
@@ -230,7 +229,6 @@ export function shuffleAndAnimatePair() {
     }
 }
 
-
 export function landingAnimation() {
     const timeline = gsap.timeline({});
 
@@ -248,49 +246,71 @@ export function landingAnimation() {
         )
 }
 
-export function carHanger() {
-    const icon = document.querySelector<HTMLElement>('.floating_price')
+export function homeLoader() {
+    const section = document.querySelector<HTMLElement>('.preloader_section')
 
-    if (!icon) return;
+    if(!section) return;
 
-    const config = {
-        swingDuration: 3,
-        swingAngle: 15,
-        easing: "sine.inOut",
-        width: 60,
-        height: 72,
-    }
+    const timeline = gsap.timeline({});
 
-    const timeline = gsap.timeline({
-        repeat: -1,
-        defaults: { ease: config.easing }
-    });
+    CustomEase.create('superease', '.08,.73,0,1');
+    CustomEase.create('easeOutCirc', '0, 0.55, 0.45, 1');
 
-    // Set transform origin
-    gsap.set(icon, {
-        transformOrigin: "50% 0%"
-    });
-
-    // Add animations
     timeline
-        .fromTo(
-            icon,
-            { rotation: config.swingAngle },
-            { rotation: -config.swingAngle, duration: config.swingDuration }
+        // .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 0, 0 0)" })
+        .set('.preloader_svg g', { transformOrigin: 'bottom center', yPercent: 400 })
+        .from(
+            gsap.utils.toArray('.preloader_icon'),
+            { yPercent: 100, rotate: 0, opacity: 0, duration: 1.2, stagger: 0.1, ease: "easeOutCirc" },
         )
-        .fromTo(
-            icon,
-            { rotation: -config.swingAngle },
-            { rotation: config.swingAngle, duration: config.swingDuration },
+        .to(
+            '.preloader_svg g',
+            { yPercent: 0, delay: "random(0, 0.5)", duration: 1.5, ease: 'superease' },
+            '-=1.0'
         )
-        // .to(
-        //     icon,
-        // )
-        // .to(
-        //     icon,
-        //     { rotation: 0, duration: config.swingDuration / 2 }
-        // );
+        .to(
+            '.preloader_section',
+            { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.in' },
+            '+=0.4',
+        )
+        .to(
+            '.preloader_svg g',
+            { yPercent: -200, delay: "random(0, 0.3)", duration: 0.4, ease: 'power3.in' },
+            '<'
+        )
+        .to(
+            gsap.utils.toArray('.preloader_icon'),
+            { yPercent: -100, rotate: 45, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power4.out" },
+            '<'
+        )
+        .from(
+            '.navbar_section',
+            { yPercent: -100, duration: 0.8, ease: "power4.out" },
+            '-=0.1',
+        )
+}
 
-    // Start from middle for smooth initial animation
-    // timeline.seek(0.5);
+export function carHanger(initialRotation: number) {
+    const airFreshener = document.querySelector<HTMLElement>('.floating_price')
+
+    if (!airFreshener) return;
+
+    const timeline = gsap.timeline()
+
+    gsap.set(airFreshener, { transformOrigin: "50% 0%" });
+
+    let currentRotation = initialRotation;
+
+    for (let i = 0; i < 100; i++) {
+        currentRotation *= 0.6;
+
+        timeline
+            .to(
+                airFreshener,
+                { rotation: -currentRotation, duration: 1.5, ease: "power1.inOut" }
+            )
+            .to(airFreshener,
+                { rotation: currentRotation, duration: 1.5, ease: "power1.inOut" }
+            );
+    }
 }

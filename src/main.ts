@@ -14,7 +14,7 @@ import { smoothScroll } from "./animations/smooth-scroll-animation";
 import { transitions } from "./animations/transitions";
 
 import { JoyrideRiveAnimation } from "./animations/rive-animations";
-import { splideCarousel, shuffleAndAnimatePair, carHanger} from "./animations/micro-animations";
+import { splideCarousel, shuffleAndAnimatePair, homeLoader} from "./animations/micro-animations";
 
 /**
  * Initialize the UI by adding event listeners and set up the initial state.
@@ -49,5 +49,4 @@ shuffleAndAnimatePair();
 
 transitions();
 
-
-carHanger()
+homeLoader()

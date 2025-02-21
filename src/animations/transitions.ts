@@ -23,7 +23,7 @@ function rocketTransition() {
 
     const iconDistanceFromTop = icon!.getBoundingClientRect().top + icon!.getBoundingClientRect().width;
 
-    const vh = window.innerHeight - iconDistanceFromTop;
+    // const vh = window.innerHeight - iconDistanceFromTop;
 
     timeline
         .set(
@@ -36,7 +36,7 @@ function rocketTransition() {
         )
         .fromTo(
             shape,
-            { height: vh },
+            { height: 0 },
             { height: '100%' },
             '<'
         )
@@ -79,7 +79,7 @@ function scooterTransition(tag: string, reverse?: boolean) {
                 yPercent: 18,
                 right: reverse ? 0 : 'auto',
                 left: reverse ? 'auto' : 0,
-                scaleX: reverse ? -1 : 1, transformOrigin: "center" 
+                scaleX: reverse ? -1 : 1, transformOrigin: "center"
             }
         )
         .set(
@@ -117,52 +117,57 @@ function scooterTransition(tag: string, reverse?: boolean) {
     });
 }
 
-function showreelTransition(){
-    const section = document.querySelector<HTMLElement>('.expertise_section');
-    const showreel = document.querySelector<HTMLElement>('.projects_section');
+function showreelTransition() {
+    const servicesSection = document.querySelector<HTMLElement>('.expertise_section');
+    const projectsSection = document.querySelector<HTMLElement>('.projects_section');
 
-    if (!section) return;
+    if (!servicesSection || !projectsSection) return;
 
-    const shape = section.querySelector('.transition_shape')
+    const projectsOuterWrapper = document.createElement("div");
+    const projectsInnerWrapper = document.createElement("div");
 
-    // if (!icon || !shape || !path) return;
+    projectsOuterWrapper.classList.add('u-vf-s-b');
+    projectsOuterWrapper.style.height = "150dvh";
+    projectsOuterWrapper.style.backgroundColor = 'var(--surface--yellow)'
+
+    projectsInnerWrapper.style.minHeight = "300dvh";
+
+    projectsSection.classList.add('u-pos-sticky');
+    projectsSection.style.top = "0px";
+
+    projectsSection.parentNode?.replaceChild(projectsOuterWrapper, projectsSection);
+    projectsInnerWrapper.appendChild(projectsSection);
+    projectsOuterWrapper.appendChild(projectsInnerWrapper);
+
 
     const timeline = gsap.timeline({})
-    const showreelTimeline = gsap.timeline({})
 
     timeline
-    .fromTo(
-        shape,
-        {clipPath: 'polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%)'},
-        {clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)'}
-    )
+        .set(
+            '.projects_showreel',
+            { transformOrigin: "50% 100%" }
 
-    showreelTimeline
-    .fromTo(
-        showreel,
-        {clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)'},
-        {clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)'}
-    )
+        )
+        .fromTo(
+            projectsSection,
+            { clipPath: 'polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%)' },
+            { clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' }
+        )
+        .fromTo(
+            '.projects_showreel',
+            { scale: 3, opacity: 0 },
+            { scale: 1, opacity: 1 },
+            '-=0.7'
+        )
 
     ScrollTrigger.create({
         animation: timeline,
-        trigger: section,
-        start: "bottom bottom",
+        trigger: servicesSection,
+        start: "bottom 75%",
         end: "bottom top",
         scrub: true,
         // markers: true,
         pin: true,
         pinSpacing: false
-    });
-
-    ScrollTrigger.create({
-        animation: showreelTimeline,
-        trigger: showreel,
-        start: "top center",
-        end: "top top",
-        scrub: true,
-        // markers: true,
-        // pin: true,
-        // pinSpacing: false
     });
 }
