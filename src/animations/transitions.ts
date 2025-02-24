@@ -77,6 +77,8 @@ function scooterTransition(tag: string, reverse?: boolean) {
 
     const timeline = gsap.timeline({});
 
+    const timelineFollowup = gsap.timeline({});
+
     const pathD = {
         start: 'M100 99.9999H0L0.000107765 1.04273C0.000107765 -0.000242472 0.000107765 -0.000242439 0.989553 -0.000244141L100 -8.74667e-05V99.9999Z',
         end: 'M100 100H0L2.55108e-05 99.9453C2.55108e-05 62.1705 55.2961 2.07424e-05 99.7959 2.07424e-05L100 0V100Z'
@@ -107,6 +109,8 @@ function scooterTransition(tag: string, reverse?: boolean) {
             { attr: { d: pathD.end } },
             '<'
         )
+
+    timelineFollowup
         .to(
             path,
             { xPercent: 100 },
@@ -118,12 +122,16 @@ function scooterTransition(tag: string, reverse?: boolean) {
         animation: timeline,
         trigger: section,
         start: "top bottom",
-        end: "top -100%",
+        end: "top top",
         scrub: true,
-        // markers: true,
-        // pin: true,
-        // pinSpacer: section,
-        // pinSpacing: false,
+    });
+
+    ScrollTrigger.create({
+        animation: timelineFollowup,
+        trigger: section,
+        start: "bottom bottom",
+        end: "bottom top",
+        scrub: true,
     });
 }
 

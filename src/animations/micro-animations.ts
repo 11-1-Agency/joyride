@@ -251,13 +251,15 @@ export function homeLoader() {
 
     if (!section) return;
 
+    gsap.set(section.querySelector<HTMLElement>('.preloader_container'), { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" });
+
     const timeline = gsap.timeline({});
 
     CustomEase.create('superease', '.08,.73,0,1');
     CustomEase.create('easeOutCirc', '0, 0.55, 0.45, 1');
 
     timeline
-        // .set('.preloader_spinning-logo', { clipPath: "polygon(0 100%, 100% 100%, 100% 0, 0 0)" })
+        .set(section.querySelector<HTMLElement>('.preloader_container'), { clipPath: "polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)" })
         .set('.preloader_svg g', { transformOrigin: 'bottom center', yPercent: 400 })
         .from(
             gsap.utils.toArray('.preloader_icon'),
