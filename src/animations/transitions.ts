@@ -65,6 +65,16 @@ function scooterTransition(tag: string, reverse?: boolean) {
 
     if (!icon || !shape || !path) return;
 
+    const sectionWrapper = document.createElement("div");
+    sectionWrapper.style.minHeight = `${section.getBoundingClientRect().height * 2}px`;
+    sectionWrapper.style.position = 'relative';
+
+    section.parentNode?.insertBefore(sectionWrapper, section);
+    sectionWrapper.appendChild(section);
+
+    gsap.set(section, { position: "sticky", top: 0, bottom: 0 });
+
+
     const timeline = gsap.timeline({});
 
     const pathD = {
@@ -108,12 +118,12 @@ function scooterTransition(tag: string, reverse?: boolean) {
         animation: timeline,
         trigger: section,
         start: "top bottom",
-        end: "top top",
+        end: "top -100%",
         scrub: true,
         // markers: true,
         // pin: true,
-        // pinSpacer: false,
-        pinSpacing: false,
+        // pinSpacer: section,
+        // pinSpacing: false,
     });
 }
 
@@ -146,18 +156,17 @@ function showreelTransition() {
         .set(
             '.projects_showreel',
             { transformOrigin: "50% 100%" }
-
         )
         .fromTo(
             projectsSection,
             { clipPath: 'polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%)' },
             { clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' }
         )
-        .fromTo(
+        .from(
             '.projects_showreel',
-            { scale: 3, opacity: 0 },
-            { scale: 1, opacity: 1 },
-            '-=0.7'
+            { scale: 0.1, opacity: 0 },
+            // { scale: 1, opacity: 1 },
+            '-=0.2'
         )
 
     ScrollTrigger.create({

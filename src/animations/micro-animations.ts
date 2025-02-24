@@ -249,7 +249,7 @@ export function landingAnimation() {
 export function homeLoader() {
     const section = document.querySelector<HTMLElement>('.preloader_section')
 
-    if(!section) return;
+    if (!section) return;
 
     const timeline = gsap.timeline({});
 
@@ -271,7 +271,7 @@ export function homeLoader() {
         .to(
             '.preloader_section',
             { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)', duration: 0.8, ease: 'power3.in' },
-            '+=0.4',
+            '+=1.5',
         )
         .to(
             '.preloader_svg g',
@@ -280,12 +280,12 @@ export function homeLoader() {
         )
         .to(
             gsap.utils.toArray('.preloader_icon'),
-            { yPercent: -100, rotate: 45, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power4.out" },
+            { yPercent: -100, rotate: 45, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power4.inOut" },
             '<'
         )
         .from(
             '.navbar_section',
-            { yPercent: -100, duration: 0.8, ease: "power4.out" },
+            { yPercent: -100, duration: 0.8, ease: "power4.inOut" },
             '-=0.1',
         )
 }
@@ -313,4 +313,21 @@ export function carHanger(initialRotation: number) {
                 { rotation: currentRotation, duration: 1.5, ease: "power1.inOut" }
             );
     }
+}
+
+export function introAnimation() {
+    const timeline = gsap.timeline({});
+
+    const items = gsap.utils.toArray('[data-intro-animation="list"] > *');
+
+    timeline
+        .from(
+            items,
+            { y: '3rem', opacity: 0, duration: 1.2, stagger: 0.1, ease: "elastic.out(1,0.5)" },
+        )
+        .from(
+            '.navbar_section',
+            { yPercent: -100, duration: 0.8, ease: "power4.out" },
+            '-=1.0',
+        )
 }
