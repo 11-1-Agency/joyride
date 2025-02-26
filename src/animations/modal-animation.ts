@@ -1,6 +1,6 @@
 import { gsap } from 'gsap';
 import Lenis from 'lenis';
-import { carHanger } from './micro-animations';
+// import { carHanger } from './micro-animations';
 
 /**
  * Modal animation
@@ -77,9 +77,9 @@ function init(name: string | undefined, lenis: Lenis) {
     trigger.addEventListener('click', () => {
 
 
-        timeline.play().then(() => {
-            carHanger(10);
-        });;
+        // timeline.play().then(() => {
+        //     carHanger(10);
+        // });;
 
         // Stop the smooth scrolling
         lenis.stop();
