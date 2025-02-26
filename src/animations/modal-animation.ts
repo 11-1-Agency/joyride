@@ -77,9 +77,7 @@ function init(name: string | undefined, lenis: Lenis) {
     trigger.addEventListener('click', () => {
 
 
-        // timeline.play().then(() => {
-        //     carHanger(10);
-        // });;
+        timeline.play()
 
         // Stop the smooth scrolling
         lenis.stop();
