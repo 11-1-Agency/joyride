@@ -251,8 +251,6 @@ export function homeLoader() {
 
     if (!section) return;
 
-    gsap.set(section.querySelector<HTMLElement>('.preloader_container'), { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" });
-
     const timeline = gsap.timeline({});
 
     CustomEase.create('superease', '.08,.73,0,1');
@@ -288,7 +286,7 @@ export function homeLoader() {
         .from(
             '.navbar_section',
             { yPercent: -100, duration: 0.8, ease: "power4.inOut" },
-            '-=0.1',
+            '-=0.5',
         )
 }
 
