@@ -256,6 +256,8 @@ export function homeLoader() {
     CustomEase.create('superease', '.08,.73,0,1');
     CustomEase.create('easeOutCirc', '0, 0.55, 0.45, 1');
 
+    const items = gsap.utils.toArray('.hero_header > *, .hero_bottom > *');
+
     timeline
         .set(section.querySelector<HTMLElement>('.preloader_container'), { clipPath: "polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)" })
         .set('.preloader_svg g', { transformOrigin: 'bottom center', yPercent: 400 })
@@ -284,9 +286,14 @@ export function homeLoader() {
             '<'
         )
         .from(
+            items,
+            { y: '3rem', opacity: 0, duration: 1.2, stagger: 0.1, ease: "elastic.out(1,0.5)" },
+            '-=0.2'
+        )
+        .from(
             '.navbar_section',
             { yPercent: -100, duration: 0.8, ease: "power4.inOut" },
-            '-=0.5',
+            '-=1.3',
         )
 }
 
